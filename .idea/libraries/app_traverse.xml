@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="app traverse">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/frontend.zip!/" />
+      <root url="jar://$PROJECT_DIR$/backend.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

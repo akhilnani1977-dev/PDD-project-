@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-traverse-midnight: #050816;
+  --color-traverse-ocean: #0F172A;
+  --color-traverse-aurora: #7C3AED;
+  --color-traverse-cyan: #06B6D4;
+  --color-traverse-sunset: #F97316;
+  --color-traverse-frost: #F8FAFC;
+
+  --color-background: var(--color-traverse-midnight);
+  --color-foreground: var(--color-traverse-frost);
+
+  /* Gradients */
+  --background-image-gradient-main: linear-gradient(to right, var(--color-traverse-ocean), var(--color-traverse-aurora), var(--color-traverse-cyan));
+}
+
+@layer base {
+  :root {
+    --background: #050816;
+    --foreground: #F8FAFC;
+  }
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--background);
+  color: var(--foreground);
+  /* Custom scrollbar for premium feel */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-traverse-aurora) var(--color-traverse-midnight);
+}
+
+body {
+  font-family: var(--font-sans), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glassmorphism utilities */
+@layer utilities {
+  .glass-panel {
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(248, 250, 252, 0.08);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .text-gradient {
+    background-image: linear-gradient(to right, #06B6D4, #7C3AED);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}

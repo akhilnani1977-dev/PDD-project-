@@ -1,0 +1,17 @@
+{
+  "name": "Traverse Travel OS",
+  "short_name": "Traverse",
+  "description": "AI-Powered Travel Intelligence for India",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "/globe.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
