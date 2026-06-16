@@ -10,9 +10,15 @@ import { Suspense } from "react";
 function SignupForm() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
+  const success = searchParams.get('success');
 
   return (
     <form className="space-y-5" action={signup}>
+      {success && (
+        <div className="p-3 mb-4 text-sm text-green-300 bg-emerald-950/40 border border-emerald-900/40 rounded-xl">
+          {success}
+        </div>
+      )}
       {error && (
         <div className="p-3 mb-4 text-sm text-red-400 bg-red-950/50 border border-red-900/50 rounded-xl">
           {error}
