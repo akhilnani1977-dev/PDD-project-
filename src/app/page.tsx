@@ -11,7 +11,7 @@ import {
   Wallet, X, Mail, Lock, User, Map, Mountain, Waves,
   TreePine, Building2, Camera, ChevronDown
 } from "lucide-react";
-import { login, signup } from "./auth/actions";
+import Link from "next/link";
 
 // --- 3D Globe ---
 function RotatingGlobe() {

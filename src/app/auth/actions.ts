@@ -14,117 +14,142 @@ function normalizeFormValue(value: FormDataEntryValue | null) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function redirectWithMessage(path: string, message: string) {
-  redirect(`${path}?${message}`)
-}
-
 export async function login(formData: FormData) {
-  const email = normalizeFormValue(formData.get('email'))
-  const password = normalizeFormValue(formData.get('password'))
+  try {
+    const email = normalizeFormValue(formData.get('email'))
+    const password = normalizeFormValue(formData.get('password'))
 
-  if (!email || !password) {
-    redirectWithMessage('/auth/login', 'error=' + encodeURIComponent('Email and password are required'))
+    // Validation
+    if (!email || !password) {
+      return redirect('/auth/login?error=' + encodeURIComponent('Email and password are required'))
+    }
+
+    if (!email.includes('@')) {
+      return redirect('/auth/login?error=' + encodeURIComponent('Please enter a valid email'))
+    }
+
+    // Mock mode - successful login
+    if (isMockMode) {
+      const cookieStore = await cookies()
+      cookieStore.set('auth-session', JSON.stringify({ email, authenticated: true }), {
+        httpOnly: false,
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: '/'
+      })
+      revalidatePath('/', 'layout')
+      return redirect('/destinations')
+    }
+
+    // Real Supabase auth
+    const supabase = await createClient()
+    const { error, data } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      return redirect('/auth/login?error=' + encodeURIComponent(error.message || 'Login failed'))
+    }
+
+    if (data?.session) {
+      revalidatePath('/', 'layout')
+      return redirect('/destinations')
+    }
+
+    return redirect('/auth/login?error=' + encodeURIComponent('Login failed. Please try again.'))
+  } catch (error) {
+    // Re-throw Next.js redirect errors
+    if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+      throw error
+    }
+    console.error('Login error:', error)
+    return redirect('/auth/login?error=' + encodeURIComponent('An error occurred during login'))
   }
-
-  if (!email.includes('@')) {
-    redirectWithMessage('/auth/login', 'error=' + encodeURIComponent('Please enter a valid email'))
-  }
-
-  if (isMockMode) {
-    const cookieStore = await cookies()
-    cookieStore.set('mock_session', 'true', { path: '/' })
-    revalidatePath('/', 'layout')
-    redirect('/destinations')
-    return
-  }
-
-  const supabase = await createClient()
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (error) {
-    redirectWithMessage('/auth/login', 'error=' + encodeURIComponent(error.message))
-  }
-
-  revalidatePath('/', 'layout')
-  redirect('/destinations')
 }
 
 export async function signup(formData: FormData) {
-  const email = normalizeFormValue(formData.get('email'))
-  const password = normalizeFormValue(formData.get('password'))
-  const fullName = normalizeFormValue(formData.get('full_name'))
+  try {
+    const email = normalizeFormValue(formData.get('email'))
+    const password = normalizeFormValue(formData.get('password'))
+    const fullName = normalizeFormValue(formData.get('full_name'))
 
-  if (!email || !password || !fullName) {
-    redirectWithMessage('/auth/signup', 'error=' + encodeURIComponent('All fields are required'))
-  }
+    // Validation
+    if (!email || !password || !fullName) {
+      return redirect('/auth/signup?error=' + encodeURIComponent('All fields are required'))
+    }
 
-  if (!email.includes('@')) {
-    redirectWithMessage('/auth/signup', 'error=' + encodeURIComponent('Please enter a valid email'))
-  }
+    if (!email.includes('@')) {
+      return redirect('/auth/signup?error=' + encodeURIComponent('Please enter a valid email'))
+    }
 
-  if (password.length < 6) {
-    redirectWithMessage('/auth/signup', 'error=' + encodeURIComponent('Password must be at least 6 characters'))
-  }
+    if (password.length < 6) {
+      return redirect('/auth/signup?error=' + encodeURIComponent('Password must be at least 6 characters'))
+    }
 
-  if (isMockMode) {
-    const cookieStore = await cookies()
-    cookieStore.set('mock_session', 'true', { path: '/' })
-    revalidatePath('/', 'layout')
-    redirect('/destinations')
-    return
-  }
+    // Mock mode - successful signup
+    if (isMockMode) {
+      const cookieStore = await cookies()
+      cookieStore.set('auth-session', JSON.stringify({ email, fullName, authenticated: true }), {
+        httpOnly: false,
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: '/'
+      })
+      revalidatePath('/', 'layout')
+      return redirect('/destinations')
+    }
 
-  const supabase = await createClient()
-  const { error, data } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        full_name: fullName,
+    // Real Supabase auth
+    const supabase = await createClient()
+    const { error, data } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
       },
-    },
-  })
+    })
 
-  if (error) {
-    const message =
-      error.message.toLowerCase().includes('already') ||
-      error.message.toLowerCase().includes('duplicate')
-        ? 'Account already exists. Please sign in.'
-        : error.message
+    if (error) {
+      const message = error.message.includes('already') ? 'Account already exists. Please sign in.' : error.message
+      return redirect('/auth/signup?error=' + encodeURIComponent(message))
+    }
 
-    const destination =
-      message === 'Account already exists. Please sign in.'
-        ? '/auth/login'
-        : '/auth/signup'
+    if (data?.user) {
+      revalidatePath('/', 'layout')
+      return redirect('/destinations')
+    }
 
-    redirectWithMessage(destination, 'error=' + encodeURIComponent(message))
+    return redirect('/auth/signup?error=' + encodeURIComponent('Signup failed. Please try again.'))
+  } catch (error) {
+    // Re-throw Next.js redirect errors
+    if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+      throw error
+    }
+    console.error('Signup error:', error)
+    return redirect('/auth/signup?error=' + encodeURIComponent('An error occurred during signup'))
   }
-
-  if (data?.session || data?.user) {
-    revalidatePath('/', 'layout')
-    redirect('/destinations')
-    return
-  }
-
-  redirectWithMessage('/auth/login', 'success=' + encodeURIComponent('Account created. Check your email to verify and sign in.'))
 }
 
 export async function signout() {
-  if (isMockMode) {
-    const cookieStore = await cookies()
-    cookieStore.delete('mock_session')
+  try {
+    if (isMockMode) {
+      const cookieStore = await cookies()
+      cookieStore.delete('auth-session')
+      revalidatePath('/', 'layout')
+      return redirect('/auth/login')
+    }
+
+    const supabase = await createClient()
+    await supabase.auth.signOut()
     revalidatePath('/', 'layout')
-    redirect('/auth/login')
-    return
+    return redirect('/auth/login')
+  } catch (error) {
+    // Re-throw Next.js redirect errors
+    if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+      throw error
+    }
+    console.error('Signout error:', error)
+    return redirect('/')
   }
-
-  const supabase = await createClient()
-  await supabase.auth.signOut()
-
-  revalidatePath('/', 'layout')
-  redirect('/auth/login')
 }
