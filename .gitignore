@@ -32,3 +32,9 @@ next-env.d.ts
 # OS files
 .DS_Store
 Thumbs.db
+
+# Supabase temp files (should not be committed)
+supabase/.temp/
+
+# Binary artifacts
+*.apk

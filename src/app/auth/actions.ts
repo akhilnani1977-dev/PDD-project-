@@ -5,6 +5,21 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 
+// Custom helper to detect Next.js redirect errors without internal imports
+function isRedirect(error: unknown): boolean {
+  if (!error) return false
+  if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+    return true
+  }
+  if (typeof error === 'object' && error !== null && 'digest' in error) {
+    const digest = (error as { digest?: unknown }).digest
+    if (typeof digest === 'string' && digest.startsWith('NEXT_REDIRECT')) {
+      return true
+    }
+  }
+  return false
+}
+
 const isMockMode =
   !process.env.NEXT_PUBLIC_SUPABASE_URL ||
   !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
@@ -37,7 +52,7 @@ export async function login(formData: FormData) {
         path: '/'
       })
       revalidatePath('/', 'layout')
-      return redirect('/destinations')
+      return redirect('/')
     }
 
     // Real Supabase auth
@@ -53,13 +68,12 @@ export async function login(formData: FormData) {
 
     if (data?.session) {
       revalidatePath('/', 'layout')
-      return redirect('/destinations')
+      return redirect('/')
     }
 
     return redirect('/auth/login?error=' + encodeURIComponent('Login failed. Please try again.'))
   } catch (error) {
-    // Re-throw Next.js redirect errors
-    if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+    if (isRedirect(error)) {
       throw error
     }
     console.error('Login error:', error)
@@ -95,7 +109,7 @@ export async function signup(formData: FormData) {
         path: '/'
       })
       revalidatePath('/', 'layout')
-      return redirect('/destinations')
+      return redirect('/')
     }
 
     // Real Supabase auth
@@ -117,13 +131,12 @@ export async function signup(formData: FormData) {
 
     if (data?.user) {
       revalidatePath('/', 'layout')
-      return redirect('/destinations')
+      return redirect('/')
     }
 
     return redirect('/auth/signup?error=' + encodeURIComponent('Signup failed. Please try again.'))
   } catch (error) {
-    // Re-throw Next.js redirect errors
-    if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+    if (isRedirect(error)) {
       throw error
     }
     console.error('Signup error:', error)
@@ -133,20 +146,19 @@ export async function signup(formData: FormData) {
 
 export async function signout() {
   try {
-    if (isMockMode) {
-      const cookieStore = await cookies()
-      cookieStore.delete('auth-session')
-      revalidatePath('/', 'layout')
-      return redirect('/auth/login')
-    }
+    const cookieStore = await cookies()
+    cookieStore.delete('auth-session')
+    cookieStore.delete('mock_session')
 
-    const supabase = await createClient()
-    await supabase.auth.signOut()
+    if (!isMockMode) {
+      const supabase = await createClient()
+      await supabase.auth.signOut()
+    }
+    
     revalidatePath('/', 'layout')
     return redirect('/auth/login')
   } catch (error) {
-    // Re-throw Next.js redirect errors
-    if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+    if (isRedirect(error)) {
       throw error
     }
     console.error('Signout error:', error)

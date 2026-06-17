@@ -2,6 +2,8 @@ import { createClient } from '@/utils/supabase/server';
 import { MapPin, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 interface Destination {
   id: string;
   name: string;

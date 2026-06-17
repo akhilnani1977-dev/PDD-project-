@@ -1,24 +1,33 @@
 @import "tailwindcss";
 
 @theme {
-  --color-traverse-midnight: #050816;
-  --color-traverse-ocean: #0F172A;
-  --color-traverse-aurora: #7C3AED;
-  --color-traverse-cyan: #06B6D4;
-  --color-traverse-sunset: #F97316;
-  --color-traverse-frost: #F8FAFC;
+  /* Primary organic palette */
+  --color-organic-green: #2B4A34;
+  --color-organic-green-dark: #1D3A29;
+  --color-organic-light: #F4F5F7;
+  --color-organic-white: #FFFFFF;
+  --color-organic-black: #121212;
+  --color-organic-accent: #E05D36;
 
-  --color-background: var(--color-traverse-midnight);
-  --color-foreground: var(--color-traverse-frost);
+  /* Legacy traverse theme tokens (used in destinations, ai-planner pages) */
+  --color-traverse-cyan: #22D3EE;
+  --color-traverse-aurora: #F59E0B;
+  --color-traverse-frost: #F4F5F7;
+  --color-traverse-midnight: #0F172A;
+  --color-traverse-ocean: #1E293B;
 
-  /* Gradients */
-  --background-image-gradient-main: linear-gradient(to right, var(--color-traverse-ocean), var(--color-traverse-aurora), var(--color-traverse-cyan));
+  --color-background: var(--color-organic-light);
+  --color-foreground: var(--color-organic-black);
 }
 
 @layer base {
   :root {
-    --background: #050816;
-    --foreground: #F8FAFC;
+    --background: #F4F5F7;
+    --foreground: #121212;
+  }
+  .dark {
+    --background: #1D3A29;
+    --foreground: #F4F5F7;
   }
 }
 
@@ -28,9 +37,11 @@ body {
   overflow-x: hidden;
   background-color: var(--background);
   color: var(--foreground);
-  /* Custom scrollbar for premium feel */
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-traverse-aurora) var(--color-traverse-midnight);
+  /* Clean, hidden scrollbar for app-like feel */
+  scrollbar-width: none;
+}
+::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -39,20 +50,30 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glassmorphism utilities */
+/* Utility classes */
 @layer utilities {
-  .glass-panel {
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(248, 250, 252, 0.08);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  .pill-button {
+    @apply rounded-full bg-organic-black text-white font-bold transition-transform hover:scale-105 active:scale-95;
   }
-
+  .pill-button-white {
+    @apply rounded-full bg-white text-organic-black font-bold transition-transform hover:scale-105 active:scale-95 shadow-sm;
+  }
+  .soft-card {
+    @apply bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100;
+  }
+  .dark .soft-card {
+    @apply bg-organic-green-dark/50 border-white/10;
+  }
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-lg;
+  }
   .text-gradient {
-    background-image: linear-gradient(to right, #06B6D4, #7C3AED);
+    background: linear-gradient(135deg, #22D3EE, #F59E0B);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+  .bg-gradient-main {
+    background: linear-gradient(135deg, #22D3EE, #F59E0B);
   }
 }

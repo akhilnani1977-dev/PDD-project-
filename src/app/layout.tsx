@@ -26,20 +26,26 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import AppLaunchLoader from "@/components/shared/AppLaunchLoader";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} antialiased bg-traverse-midnight text-traverse-frost min-h-screen flex flex-col`}
+        className={`${inter.variable} antialiased min-h-screen flex flex-col transition-colors duration-300`}
       >
-        <Navbar />
-        <main className="flex-1 flex flex-col relative w-full h-full">
-          {children}
-        </main>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <AppLaunchLoader />
+          <Navbar />
+          <main className="flex-1 flex flex-col relative w-full h-full">
+            {children}
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

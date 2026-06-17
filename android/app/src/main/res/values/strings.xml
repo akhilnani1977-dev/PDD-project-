@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">traverse</string>
+    <string name="title_activity_main">traverse</string>
+    <string name="package_name">com.traverse.app</string>
+    <string name="custom_url_scheme">com.traverse.app</string>
+</resources>
