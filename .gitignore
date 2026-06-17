@@ -40,4 +40,5 @@ supabase/.temp/
 *.apk
 E2E_Test_Report_Traverse_*.xlsx
 Appium_E2E_Test_Report_Traverse_*.xlsx
+Selenium_E2E_Test_Report_Traverse_*.xlsx
 ~$*.xlsx
