@@ -322,19 +322,26 @@ async function runSeleniumTests() {
 
     // Test Case: Load Website & Check Redirect to Login
     console.log(`Test 1: Opening root URL: ${BASE_URL}`);
-    await driver.get(BASE_URL);
-    await driver.sleep(3000); // Wait for splash screen load
+    try {
+      await driver.get(BASE_URL);
+      await driver.sleep(3000); // Wait for splash screen load
 
-    let currentUrl = await driver.getCurrentUrl();
-    console.log('Current URL after redirection:', currentUrl);
+      let currentUrl = await driver.getCurrentUrl();
+      console.log('Current URL after redirection:', currentUrl);
 
-    if (currentUrl.includes('/auth/login') || currentUrl.includes('login')) {
-      console.log('✅ Redirect to login verified.');
-      updateTestResult('TC_WEB_FUNC_007', 'PASS', `Successfully redirected to login page: ${currentUrl}`);
-      updateTestResult('TC_WEB_UI_001', 'PASS', 'Splash screen loading state rendered and transitioned to login.');
-    } else {
-      console.log('❌ Unexpected redirection URL.');
-      updateTestResult('TC_WEB_FUNC_007', 'FAIL', `Unexpected redirection URL: ${currentUrl}`);
+      if (currentUrl.includes('/auth/login') || currentUrl.includes('login')) {
+        console.log('✅ Redirect to login verified.');
+        updateTestResult('TC_WEB_FUNC_007', 'PASS', `Successfully redirected to login page: ${currentUrl}`);
+        updateTestResult('TC_WEB_UI_001', 'PASS', 'Splash screen loading state rendered and transitioned to login.');
+      } else {
+        console.log('❌ Unexpected redirection URL.');
+        updateTestResult('TC_WEB_FUNC_007', 'FAIL', `Unexpected redirection URL: ${currentUrl}`);
+        updateTestResult('TC_WEB_UI_001', 'FAIL', `Unexpected redirection URL: ${currentUrl}`);
+      }
+    } catch (err) {
+      console.log('❌ Redirection check failed.', err.message);
+      updateTestResult('TC_WEB_FUNC_007', 'FAIL', `Redirection check failed: ${err.message}`);
+      updateTestResult('TC_WEB_UI_001', 'FAIL', `Splash screen check failed: ${err.message}`);
     }
 
     // Test Case: Check Form Elements Render
@@ -368,6 +375,7 @@ async function runSeleniumTests() {
       await driver.sleep(1000);
     } catch (err) {
       console.log('❌ Link navigation check failed.', err.message);
+      updateTestResult('TC_WEB_UI_005', 'FAIL', `Link navigation check failed: ${err.message}`);
     }
 
     // Test Case: Empty Input Validation
@@ -380,6 +388,7 @@ async function runSeleniumTests() {
       updateTestResult('TC_WEB_VAL_001', 'PASS', 'Empty email/password submission blocked by form input controls.');
     } catch (err) {
       console.log('❌ Empty form submit test failed.', err.message);
+      updateTestResult('TC_WEB_VAL_001', 'FAIL', `Empty form submit test failed: ${err.message}`);
     }
 
     console.log('Browser automated test suite finished.');

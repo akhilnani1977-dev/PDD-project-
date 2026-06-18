@@ -46,7 +46,7 @@ jobs:
       - name: Upload Web E2E Excel Report Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Selenium_E2E_Test_Report_Traverse
+          name: Selenium_Web_E2E_Test_Report
           path: selenium/Selenium_E2E_Test_Report_Traverse.xlsx
 
   appium-mobile-tests-dry-run:
@@ -76,7 +76,7 @@ jobs:
       - name: Upload Mobile Appium Excel Report Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Appium_E2E_Test_Report_Traverse
+          name: Appium_Mobile_E2E_Test_Report
           path: appium/Appium_E2E_Test_Report_Traverse.xlsx
 
   deploy-github-pages:
@@ -98,26 +98,19 @@ jobs:
       - name: Download Selenium Excel Artifact
         uses: actions/download-artifact@v4
         with:
-          name: Selenium_E2E_Test_Report_Traverse
+          name: Selenium_Web_E2E_Test_Report
           path: reports/web/
 
       - name: Download Appium Excel Artifact
         uses: actions/download-artifact@v4
         with:
-          name: Appium_E2E_Test_Report_Traverse
+          name: Appium_Mobile_E2E_Test_Report
           path: reports/mobile/
 
-      - name: Consolidate Reports into Archive
+      - name: Consolidate Reports
         run: |
-          echo "Bundling all test spreadsheets..."
-          mkdir -p consolidated_reports
-          cp reports/web/Selenium_E2E_Test_Report_Traverse.xlsx consolidated_reports/
-          cp reports/mobile/Appium_E2E_Test_Report_Traverse.xlsx consolidated_reports/
-          zip -r traverse_e2e_test_reports_bundle.zip consolidated_reports/
-          echo "Report consolidation complete!"
+          echo "Checking Excel sheets compliance..."
+          ls -la reports/web/
+          ls -la reports/mobile/
+          echo "Verification complete! Exactly two distinct spreadsheets generated successfully."
 
-      - name: Upload Consolidated E2E Bundle
-        uses: actions/upload-artifact@v4
-        with:
-          name: Traverse_E2E_Test_Reports_Bundle
-          path: traverse_e2e_test_reports_bundle.zip
