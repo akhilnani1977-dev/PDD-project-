@@ -42,3 +42,8 @@ E2E_Test_Report_Traverse_*.xlsx
 Appium_E2E_Test_Report_Traverse_*.xlsx
 Selenium_E2E_Test_Report_Traverse_*.xlsx
 ~$*.xlsx
+
+# Local Test Reports and Build Artifacts
+/deploy_site/
+*_report.json
+*/*_Report_Traverse_*.xlsx
