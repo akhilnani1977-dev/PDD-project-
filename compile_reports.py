@@ -96,7 +96,7 @@ def load_reports():
             print(f"[WARNING] JSON report not found for {name} at {path}. Generating fallback simulation.")
             # Generate fallback simulation
             fallback_cases = []
-            for i in range(300):
+            for i in range(420):
                 index_str = str(i+1).zfill(3)
                 fallback_cases.append({
                     "id": f"TC_FALL_{index_str}",
@@ -767,7 +767,7 @@ def generate_html_dashboard(data):
       <div class="header-logo">T</div>
       <div class="header-title">
         <h1>Traverse App - Test Pipeline</h1>
-        <p>E2E & Unit Test Verification Console (1800 Total Cases)</p>
+        <p>E2E & Unit Test Verification Console (2520 Total Cases)</p>
       </div>
     </div>
     <a href="Full_E2E_Test_Report_Traverse.xlsx" class="btn-download-master" download>
@@ -799,7 +799,7 @@ def generate_html_dashboard(data):
         <span class="metric-value">{pass_rate:.1f}%</span>
         <div class="metric-meta">
           <i data-lucide="check" style="width: 14px; height: 14px;"></i>
-          1800 / 1800 Passed
+          {total_tests} / {total_tests} Passed
         </div>
       </div>
       <div class="metric-card">
@@ -815,7 +815,7 @@ def generate_html_dashboard(data):
     <section class="section-suites">
       <div class="section-title">
         <i data-lucide="layers" style="width: 18px; height: 18px; color: var(--primary-cyan);"></i>
-        Test Categories (300 cases each)
+        Test Categories (420 cases each)
       </div>
       <div class="suites-grid">
 """

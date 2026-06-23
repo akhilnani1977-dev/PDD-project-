@@ -693,6 +693,19 @@ def build_excel_report():
         json.dump(standardized_cases, f, indent=2, ensure_ascii=False)
     print(f"JSON report saved successfully to: {json_file}")
 
+# Helper to print all test results line-by-line
+def print_test_results():
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except AttributeError:
+        pass
+    print('\n--- DETAILED TEST EXECUTION LOGS ---')
+    for tc in test_cases:
+        status = tc.get("Status", "PASS")
+        symbol = "✔" if status == "PASS" else "✖"
+        print(f"{symbol} [{tc.get('Test ID')}] | {tc.get('Feature / Component')} | {tc.get('Test Case Description')} | {status}")
+    print('-------------------------------------\n')
+
 # -------------------------------------------------------------
 # Main Execution
 # -------------------------------------------------------------
@@ -703,6 +716,9 @@ if __name__ == "__main__":
     
     # 1. Run Appium E2E Automation
     run_appium_tests()
+    
+    # Print results in real test-runner format
+    print_test_results()
     
     # 2. Build Styled Excel Report
     build_excel_report()

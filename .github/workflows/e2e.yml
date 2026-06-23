@@ -78,84 +78,12 @@ jobs:
 
       - name: Generate Selenium HTML Report
         run: |
-          mkdir -p reports
-          cd selenium
-          # Count test cases from the generated CSV or JSON if available
-          TOTAL=420
-          PASSED=420
-          FAILED=0
-          DATE=$(date '+%Y-%m-%d %H:%M:%S')
-
-          cat > ../reports/selenium-web-report.html << EOF
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <title>Selenium Web Test Report — Traverse</title>
-            <style>
-              * { box-sizing: border-box; margin: 0; padding: 0; }
-              body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; padding: 30px; }
-              .header { background: linear-gradient(135deg, #1e3a5f 0%, #0f1117 100%); border: 1px solid #2d4a6b; border-radius: 12px; padding: 30px; margin-bottom: 24px; }
-              h1 { font-size: 26px; color: #60a5fa; margin-bottom: 6px; }
-              .subtitle { color: #94a3b8; font-size: 13px; }
-              .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-              .stat-card { background: #1e2530; border-radius: 10px; padding: 20px; text-align: center; border: 1px solid #2d3748; }
-              .stat-num { font-size: 36px; font-weight: 700; }
-              .stat-label { font-size: 12px; color: #94a3b8; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-              .green { color: #4ade80; } .red { color: #f87171; } .blue { color: #60a5fa; } .yellow { color: #fbbf24; }
-              .section { background: #1e2530; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid #2d3748; }
-              h2 { font-size: 16px; color: #93c5fd; margin-bottom: 16px; border-bottom: 1px solid #2d3748; padding-bottom: 10px; }
-              table { width: 100%; border-collapse: collapse; font-size: 13px; }
-              th { background: #1f4e78; color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; }
-              td { padding: 9px 12px; border-bottom: 1px solid #2d3748; }
-              tr:nth-child(even) td { background: #161b25; }
-              .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-              .pass { background: #166534; color: #4ade80; }
-              .fail { background: #7f1d1d; color: #f87171; }
-              .footer { text-align: center; color: #475569; font-size: 12px; margin-top: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>🌐 Selenium Web E2E Test Report</h1>
-              <p class="subtitle">Traverse — Website Test Suite &nbsp;|&nbsp; Generated: $DATE &nbsp;|&nbsp; Runner: Selenium WebDriver + Node.js</p>
-            </div>
-            <div class="stats">
-              <div class="stat-card"><div class="stat-num blue">$TOTAL</div><div class="stat-label">Total Tests</div></div>
-              <div class="stat-card"><div class="stat-num green">$PASSED</div><div class="stat-label">Passed</div></div>
-              <div class="stat-card"><div class="stat-num red">$FAILED</div><div class="stat-label">Failed</div></div>
-              <div class="stat-card"><div class="stat-num green">100%</div><div class="stat-label">Pass Rate</div></div>
-            </div>
-            <div class="section">
-              <h2>Test Category Breakdown</h2>
-              <table>
-                <tr><th>Category</th><th>Tests</th><th>Passed</th><th>Failed</th><th>Pass Rate</th></tr>
-                <tr><td>UI/UX Testing</td><td>105</td><td>105</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>Functional Testing</td><td>105</td><td>105</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>Unit &amp; System Testing</td><td>105</td><td>105</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>Validation &amp; Security</td><td>105</td><td>105</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td><strong>TOTAL</strong></td><td><strong>420</strong></td><td><strong>420</strong></td><td><strong>0</strong></td><td><span class="badge pass">100%</span></td></tr>
-              </table>
-            </div>
-            <div class="section">
-              <h2>Sample Test Results</h2>
-              <table>
-                <tr><th>Test ID</th><th>Category</th><th>Component</th><th>Description</th><th>Status</th></tr>
-                <tr><td>TC_WEB_UI_001</td><td>UI/UX</td><td>Splash Screen</td><td>Verify splash screen displays on first load</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_WEB_FUNC_001</td><td>Functional</td><td>Authentication</td><td>Verify user can log in with valid credentials</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_WEB_SYS_001</td><td>Unit</td><td>LocalStorage Sync</td><td>Verify localStorage stores theme preferences</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_WEB_VAL_001</td><td>Validation</td><td>Input Constraints</td><td>Verify empty field submissions block actions</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_WEB_UI_026</td><td>UI/UX</td><td>Typography</td><td>Verify Outfit and Inter fonts render correctly</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_WEB_FUNC_016</td><td>Functional</td><td>Search Bar</td><td>Verify search input filters destinations dynamically</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_WEB_VAL_005</td><td>Validation</td><td>XSS Security</td><td>Verify input fields strip HTML tags</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_WEB_VAL_006</td><td>Validation</td><td>SQL Injection</td><td>Verify search queries parameterize inputs</td><td><span class="badge pass">PASS</span></td></tr>
-              </table>
-            </div>
-            <div class="footer">✅ All 420 Selenium Web Tests Passed &nbsp;|&nbsp; 100% Pass Rate &nbsp;|&nbsp; Traverse CI/CD Pipeline</div>
-          </body>
-          </html>
-          EOF
+          python generate_suite_report.py \
+            --json selenium/selenium_report.json \
+            --output reports/selenium-web-report.html \
+            --title "🌐 Selenium Web E2E Test Report" \
+            --subtitle "Traverse — Website Test Suite | Runner: Selenium WebDriver + Node.js" \
+            --type selenium
           echo "✅ Selenium HTML report generated successfully."
 
       - name: Upload Selenium Report Artifact
@@ -210,74 +138,12 @@ jobs:
 
       - name: Generate Appium HTML Report
         run: |
-          mkdir -p reports
-          DATE=$(date '+%Y-%m-%d %H:%M:%S')
-          cat > reports/appium-android-report.html << EOF
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8"/>
-            <title>Appium Android Report — Traverse</title>
-            <style>
-              * { box-sizing: border-box; margin: 0; padding: 0; }
-              body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; padding: 30px; }
-              .header { background: linear-gradient(135deg, #1e3a5f 0%, #0f1117 100%); border: 1px solid #2d4a6b; border-radius: 12px; padding: 30px; margin-bottom: 24px; }
-              h1 { font-size: 26px; color: #60a5fa; margin-bottom: 6px; }
-              .subtitle { color: #94a3b8; font-size: 13px; }
-              .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-              .stat-card { background: #1e2530; border-radius: 10px; padding: 20px; text-align: center; border: 1px solid #2d3748; }
-              .stat-num { font-size: 36px; font-weight: 700; }
-              .stat-label { font-size: 12px; color: #94a3b8; margin-top: 4px; text-transform: uppercase; }
-              .green { color: #4ade80; } .red { color: #f87171; } .blue { color: #60a5fa; }
-              .section { background: #1e2530; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid #2d3748; }
-              h2 { font-size: 16px; color: #93c5fd; margin-bottom: 16px; border-bottom: 1px solid #2d3748; padding-bottom: 10px; }
-              table { width: 100%; border-collapse: collapse; font-size: 13px; }
-              th { background: #1f4e78; color: #fff; padding: 10px 12px; text-align: left; }
-              td { padding: 9px 12px; border-bottom: 1px solid #2d3748; }
-              tr:nth-child(even) td { background: #161b25; }
-              .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-              .pass { background: #166534; color: #4ade80; }
-              .footer { text-align: center; color: #475569; font-size: 12px; margin-top: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>📱 Appium Android E2E Test Report</h1>
-              <p class="subtitle">Traverse — Android Mobile Test Suite &nbsp;|&nbsp; Generated: $DATE &nbsp;|&nbsp; Runner: Appium UiAutomator2 (Simulated)</p>
-            </div>
-            <div class="stats">
-              <div class="stat-card"><div class="stat-num blue">420</div><div class="stat-label">Total Tests</div></div>
-              <div class="stat-card"><div class="stat-num green">420</div><div class="stat-label">Passed</div></div>
-              <div class="stat-card"><div class="stat-num red">0</div><div class="stat-label">Failed</div></div>
-              <div class="stat-card"><div class="stat-num green">100%</div><div class="stat-label">Pass Rate</div></div>
-            </div>
-            <div class="section">
-              <h2>Test Category Breakdown</h2>
-              <table>
-                <tr><th>Category</th><th>Tests</th><th>Passed</th><th>Failed</th><th>Pass Rate</th></tr>
-                <tr><td>UI/UX Mobile Testing</td><td>105</td><td>105</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>Functional Mobile Testing</td><td>105</td><td>105</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>Unit &amp; System Mobile Testing</td><td>105</td><td>105</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>Validation &amp; Security Mobile</td><td>105</td><td>105</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td><strong>TOTAL</strong></td><td><strong>420</strong></td><td><strong>420</strong></td><td><strong>0</strong></td><td><span class="badge pass">100%</span></td></tr>
-              </table>
-            </div>
-            <div class="section">
-              <h2>Sample Test Results</h2>
-              <table>
-                <tr><th>Test ID</th><th>Category</th><th>Component</th><th>Description</th><th>Status</th></tr>
-                <tr><td>TC_MOB_UI_001</td><td>UI/UX</td><td>Splash Screen</td><td>Verify splash screen displays on app launch</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_MOB_FUNC_001</td><td>Functional</td><td>Authentication</td><td>Verify login with valid credentials</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_MOB_SYS_001</td><td>Unit</td><td>Capacitor Bridge</td><td>Verify Capacitor core bridge initialized</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_MOB_VAL_005</td><td>Validation</td><td>Input Sanitization</td><td>Verify search sanitizes special characters</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_MOB_FUNC_026</td><td>Functional</td><td>AI Planner</td><td>Verify Generate Itinerary starts API process</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_MOB_VAL_019</td><td>Validation</td><td>SQL Injection</td><td>Verify profile updates use parameterized inputs</td><td><span class="badge pass">PASS</span></td></tr>
-              </table>
-            </div>
-            <div class="footer">✅ All 420 Appium Android Tests Passed &nbsp;|&nbsp; 100% Pass Rate &nbsp;|&nbsp; Traverse CI/CD Pipeline</div>
-          </body>
-          </html>
-          EOF
+          python generate_suite_report.py \
+            --json appium/appium_report.json \
+            --output reports/appium-android-report.html \
+            --title "📱 Appium Android E2E Test Report" \
+            --subtitle "Traverse — Android Mobile Test Suite | Runner: Appium UiAutomator2" \
+            --type appium
           echo "✅ Appium Android HTML report generated."
 
       - name: Upload Appium Report Artifact
@@ -327,74 +193,12 @@ jobs:
 
       - name: Generate Unit Test HTML Report
         run: |
-          mkdir -p reports
-          DATE=$(date '+%Y-%m-%d %H:%M:%S')
-          cat > reports/unit-test-report.html << EOF
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8"/>
-            <title>API Unit Test Report — Traverse</title>
-            <style>
-              * { box-sizing: border-box; margin: 0; padding: 0; }
-              body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; padding: 30px; }
-              .header { background: linear-gradient(135deg, #1e3a5f 0%, #0f1117 100%); border: 1px solid #2d4a6b; border-radius: 12px; padding: 30px; margin-bottom: 24px; }
-              h1 { font-size: 26px; color: #60a5fa; margin-bottom: 6px; }
-              .subtitle { color: #94a3b8; font-size: 13px; }
-              .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-              .stat-card { background: #1e2530; border-radius: 10px; padding: 20px; text-align: center; border: 1px solid #2d3748; }
-              .stat-num { font-size: 36px; font-weight: 700; }
-              .stat-label { font-size: 12px; color: #94a3b8; margin-top: 4px; text-transform: uppercase; }
-              .green { color: #4ade80; } .red { color: #f87171; } .blue { color: #60a5fa; }
-              .section { background: #1e2530; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid #2d3748; }
-              h2 { font-size: 16px; color: #93c5fd; margin-bottom: 16px; border-bottom: 1px solid #2d3748; padding-bottom: 10px; }
-              table { width: 100%; border-collapse: collapse; font-size: 13px; }
-              th { background: #1f4e78; color: #fff; padding: 10px 12px; text-align: left; }
-              td { padding: 9px 12px; border-bottom: 1px solid #2d3748; }
-              tr:nth-child(even) td { background: #161b25; }
-              .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-              .pass { background: #166534; color: #4ade80; }
-              .footer { text-align: center; color: #475569; font-size: 12px; margin-top: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>⚙️ API Unit Test Report</h1>
-              <p class="subtitle">Traverse — Backend API &amp; DB Unit Tests &nbsp;|&nbsp; Generated: $DATE &nbsp;|&nbsp; Runner: Jest &amp; Python Simulators</p>
-            </div>
-            <div class="stats">
-              <div class="stat-card"><div class="stat-num blue">420</div><div class="stat-label">Total Tests</div></div>
-              <div class="stat-card"><div class="stat-num green">420</div><div class="stat-label">Passed</div></div>
-              <div class="stat-card"><div class="stat-num red">0</div><div class="stat-label">Failed</div></div>
-              <div class="stat-card"><div class="stat-num green">100%</div><div class="stat-label">Pass Rate</div></div>
-            </div>
-            <div class="section">
-              <h2>Test Category Breakdown</h2>
-              <table>
-                <tr><th>Category</th><th>Tests</th><th>Passed</th><th>Failed</th><th>Pass Rate</th></tr>
-                <tr><td>Supabase Client &amp; Auth</td><td>80</td><td>80</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>API Routes &amp; Controllers</td><td>80</td><td>80</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>Validation Utilities</td><td>80</td><td>80</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>Database Functions &amp; Triggers</td><td>80</td><td>80</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td>State Management &amp; Config</td><td>100</td><td>100</td><td>0</td><td><span class="badge pass">100%</span></td></tr>
-                <tr><td><strong>TOTAL</strong></td><td><strong>420</strong></td><td><strong>420</strong></td><td><strong>0</strong></td><td><span class="badge pass">100%</span></td></tr>
-              </table>
-            </div>
-            <div class="section">
-              <h2>Sample Test Results</h2>
-              <table>
-                <tr><th>Test ID</th><th>Category</th><th>Component</th><th>Description</th><th>Status</th></tr>
-                <tr><td>TC_UNIT_API_001</td><td>Unit</td><td>Supabase Client</td><td>Verify Supabase client instantiates with valid URL and key</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_UNIT_API_003</td><td>Unit</td><td>Auth Action</td><td>Verify login() returns success for valid credentials</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_UNIT_API_011</td><td>Unit</td><td>Validation Utility</td><td>Verify isValidEmail() returns true for standard emails</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_UNIT_API_015</td><td>Unit</td><td>Database Function</td><td>Verify handle_new_user() trigger executes</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>TC_UNIT_API_017</td><td>Unit</td><td>Zustand Store</td><td>Verify UI store updates active state correctly</td><td><span class="badge pass">PASS</span></td></tr>
-              </table>
-            </div>
-            <div class="footer">✅ All 420 API Unit Tests Passed &nbsp;|&nbsp; 100% Pass Rate &nbsp;|&nbsp; Traverse CI/CD Pipeline</div>
-          </body>
-          </html>
-          EOF
+          python generate_suite_report.py \
+            --json unit-tests/unit_report.json \
+            --output reports/unit-test-report.html \
+            --title "⚙️ API Unit Test Report" \
+            --subtitle "Traverse — Backend API & DB Unit Tests | Runner: Python Unit Tests" \
+            --type api
           echo "✅ Unit test HTML report generated."
 
       - name: Upload Unit Test Report Artifact
@@ -444,64 +248,12 @@ jobs:
 
       - name: Generate Validation HTML Report
         run: |
-          mkdir -p reports
-          DATE=$(date '+%Y-%m-%d %H:%M:%S')
-          cat > reports/validation-test-report.html << EOF
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8"/>
-            <title>Validation Test Report — Traverse</title>
-            <style>
-              * { box-sizing: border-box; margin: 0; padding: 0; }
-              body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; padding: 30px; }
-              .header { background: linear-gradient(135deg, #1e3a5f 0%, #0f1117 100%); border: 1px solid #2d4a6b; border-radius: 12px; padding: 30px; margin-bottom: 24px; }
-              h1 { font-size: 26px; color: #60a5fa; margin-bottom: 6px; }
-              .subtitle { color: #94a3b8; font-size: 13px; }
-              .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-              .stat-card { background: #1e2530; border-radius: 10px; padding: 20px; text-align: center; border: 1px solid #2d3748; }
-              .stat-num { font-size: 36px; font-weight: 700; }
-              .stat-label { font-size: 12px; color: #94a3b8; margin-top: 4px; text-transform: uppercase; }
-              .green { color: #4ade80; } .red { color: #f87171; } .blue { color: #60a5fa; }
-              .section { background: #1e2530; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid #2d3748; }
-              h2 { font-size: 16px; color: #93c5fd; margin-bottom: 16px; border-bottom: 1px solid #2d3748; padding-bottom: 10px; }
-              table { width: 100%; border-collapse: collapse; font-size: 13px; }
-              th { background: #1f4e78; color: #fff; padding: 10px 12px; text-align: left; }
-              td { padding: 9px 12px; border-bottom: 1px solid #2d3748; }
-              tr:nth-child(even) td { background: #161b25; }
-              .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-              .pass { background: #166534; color: #4ade80; }
-              .footer { text-align: center; color: #475569; font-size: 12px; margin-top: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>🛡️ Validation &amp; Security Test Report</h1>
-              <p class="subtitle">Traverse — Input Validation &amp; Security Suite &nbsp;|&nbsp; Generated: $DATE &nbsp;|&nbsp; Runner: OWASP ZAP + Custom Assertions</p>
-            </div>
-            <div class="stats">
-              <div class="stat-card"><div class="stat-num blue">420</div><div class="stat-label">Total Tests</div></div>
-              <div class="stat-card"><div class="stat-num green">420</div><div class="stat-label">Passed</div></div>
-              <div class="stat-card"><div class="stat-num red">0</div><div class="stat-label">Failed</div></div>
-              <div class="stat-card"><div class="stat-num green">100%</div><div class="stat-label">Pass Rate</div></div>
-            </div>
-            <div class="section">
-              <h2>Security &amp; Validation Checks</h2>
-              <table>
-                <tr><th>Check Type</th><th>Tests</th><th>Passed</th><th>Status</th></tr>
-                <tr><td>Required Fields Validation</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Email Format Validation</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Password Strength Checks</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Input Sanitization</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>SQL Injection Protection</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>XSS Protection</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td><strong>TOTAL</strong></td><td><strong>420</strong></td><td><strong>420</strong></td><td><span class="badge pass">100%</span></td></tr>
-              </table>
-            </div>
-            <div class="footer">✅ All 420 Validation Tests Passed &nbsp;|&nbsp; 100% Pass Rate &nbsp;|&nbsp; Traverse CI/CD Pipeline</div>
-          </body>
-          </html>
-          EOF
+          python generate_suite_report.py \
+            --json validation-tests/validation_report.json \
+            --output reports/validation-test-report.html \
+            --title "🛡️ Validation & Security Test Report" \
+            --subtitle "Traverse — Input Validation & Security Suite | Runner: Custom Assertions" \
+            --type validation
           echo "✅ Validation HTML report generated."
 
       - name: Upload Validation Report Artifact
@@ -559,64 +311,12 @@ jobs:
 
       - name: Generate Deployment HTML Report
         run: |
-          mkdir -p reports
-          DATE=$(date '+%Y-%m-%d %H:%M:%S')
-          cat > reports/deployment-test-report.html << EOF
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8"/>
-            <title>Deployment Test Report — Traverse</title>
-            <style>
-              * { box-sizing: border-box; margin: 0; padding: 0; }
-              body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; padding: 30px; }
-              .header { background: linear-gradient(135deg, #1e3a5f 0%, #0f1117 100%); border: 1px solid #2d4a6b; border-radius: 12px; padding: 30px; margin-bottom: 24px; }
-              h1 { font-size: 26px; color: #60a5fa; margin-bottom: 6px; }
-              .subtitle { color: #94a3b8; font-size: 13px; }
-              .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-              .stat-card { background: #1e2530; border-radius: 10px; padding: 20px; text-align: center; border: 1px solid #2d3748; }
-              .stat-num { font-size: 36px; font-weight: 700; }
-              .stat-label { font-size: 12px; color: #94a3b8; margin-top: 4px; text-transform: uppercase; }
-              .green { color: #4ade80; } .red { color: #f87171; } .blue { color: #60a5fa; }
-              .section { background: #1e2530; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid #2d3748; }
-              h2 { font-size: 16px; color: #93c5fd; margin-bottom: 16px; border-bottom: 1px solid #2d3748; padding-bottom: 10px; }
-              table { width: 100%; border-collapse: collapse; font-size: 13px; }
-              th { background: #1f4e78; color: #fff; padding: 10px 12px; text-align: left; }
-              td { padding: 9px 12px; border-bottom: 1px solid #2d3748; }
-              tr:nth-child(even) td { background: #161b25; }
-              .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-              .pass { background: #166534; color: #4ade80; }
-              .footer { text-align: center; color: #475569; font-size: 12px; margin-top: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>🚀 Deployment Status Test Report</h1>
-              <p class="subtitle">Traverse — Deployment &amp; Infrastructure Tests &nbsp;|&nbsp; Generated: $DATE &nbsp;|&nbsp; Runner: Webpack + Vercel Config</p>
-            </div>
-            <div class="stats">
-              <div class="stat-card"><div class="stat-num blue">420</div><div class="stat-label">Total Tests</div></div>
-              <div class="stat-card"><div class="stat-num green">420</div><div class="stat-label">Passed</div></div>
-              <div class="stat-card"><div class="stat-num red">0</div><div class="stat-label">Failed</div></div>
-              <div class="stat-card"><div class="stat-num green">100%</div><div class="stat-label">Pass Rate</div></div>
-            </div>
-            <div class="section">
-              <h2>Deployment Checks</h2>
-              <table>
-                <tr><th>Check</th><th>Tests</th><th>Passed</th><th>Status</th></tr>
-                <tr><td>Environment Variables Verification</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Build Success Checks</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Database Connection Verification</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>API Health Verification</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>SSL &amp; Security Headers</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Route &amp; Middleware Config</td><td>70</td><td>70</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td><strong>TOTAL</strong></td><td><strong>420</strong></td><td><strong>420</strong></td><td><span class="badge pass">100%</span></td></tr>
-              </table>
-            </div>
-            <div class="footer">✅ All 420 Deployment Tests Passed &nbsp;|&nbsp; 100% Pass Rate &nbsp;|&nbsp; Traverse CI/CD Pipeline</div>
-          </body>
-          </html>
-          EOF
+          python generate_suite_report.py \
+            --json deployment-tests/deployment_report.json \
+            --output reports/deployment-test-report.html \
+            --title "🚀 Deployment Status Test Report" \
+            --subtitle "Traverse — Deployment & Infrastructure Tests | Runner: Vercel Config & Health Probes" \
+            --type deployment
           echo "✅ Deployment HTML report generated."
 
       - name: Upload Deployment Report Artifact
@@ -667,74 +367,12 @@ jobs:
 
       - name: Generate Load Test HTML Report
         run: |
-          mkdir -p reports
-          DATE=$(date '+%Y-%m-%d %H:%M:%S')
-          cat > reports/load-test-report.html << EOF
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8"/>
-            <title>Load Test Report — Traverse</title>
-            <style>
-              * { box-sizing: border-box; margin: 0; padding: 0; }
-              body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; padding: 30px; }
-              .header { background: linear-gradient(135deg, #1e3a5f 0%, #0f1117 100%); border: 1px solid #2d4a6b; border-radius: 12px; padding: 30px; margin-bottom: 24px; }
-              h1 { font-size: 26px; color: #60a5fa; margin-bottom: 6px; }
-              .subtitle { color: #94a3b8; font-size: 13px; }
-              .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-              .stat-card { background: #1e2530; border-radius: 10px; padding: 20px; text-align: center; border: 1px solid #2d3748; }
-              .stat-num { font-size: 36px; font-weight: 700; }
-              .stat-label { font-size: 12px; color: #94a3b8; margin-top: 4px; text-transform: uppercase; }
-              .green { color: #4ade80; } .red { color: #f87171; } .blue { color: #60a5fa; } .yellow { color: #fbbf24; }
-              .section { background: #1e2530; border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid #2d3748; }
-              h2 { font-size: 16px; color: #93c5fd; margin-bottom: 16px; border-bottom: 1px solid #2d3748; padding-bottom: 10px; }
-              table { width: 100%; border-collapse: collapse; font-size: 13px; }
-              th { background: #1f4e78; color: #fff; padding: 10px 12px; text-align: left; }
-              td { padding: 9px 12px; border-bottom: 1px solid #2d3748; }
-              tr:nth-child(even) td { background: #161b25; }
-              .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-              .pass { background: #166534; color: #4ade80; }
-              .footer { text-align: center; color: #475569; font-size: 12px; margin-top: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>⚡ Load &amp; Performance Test Report</h1>
-              <p class="subtitle">Traverse — Performance Testing Suite &nbsp;|&nbsp; Generated: $DATE &nbsp;|&nbsp; Runner: Locust + Lighthouse</p>
-            </div>
-            <div class="stats">
-              <div class="stat-card"><div class="stat-num blue">420</div><div class="stat-label">Total Tests</div></div>
-              <div class="stat-card"><div class="stat-num green">420</div><div class="stat-label">Passed</div></div>
-              <div class="stat-card"><div class="stat-num yellow">1000</div><div class="stat-label">Concurrent Users</div></div>
-              <div class="stat-card"><div class="stat-num green">100%</div><div class="stat-label">Pass Rate</div></div>
-            </div>
-            <div class="section">
-              <h2>Performance Metrics Summary</h2>
-              <table>
-                <tr><th>Metric</th><th>Value</th><th>Threshold</th><th>Status</th></tr>
-                <tr><td>Average Response Time</td><td>182ms</td><td>&lt; 2500ms</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Peak Response Time (p99)</td><td>620ms</td><td>&lt; 5000ms</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Throughput (req/sec)</td><td>1850 rps</td><td>&gt; 500 rps</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>CPU Usage (peak)</td><td>62%</td><td>&lt; 85%</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Memory Usage (peak)</td><td>68%</td><td>&lt; 85%</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Largest Contentful Paint</td><td>1.88s</td><td>&lt; 2.5s</td><td><span class="badge pass">PASS</span></td></tr>
-              </table>
-            </div>
-            <div class="section">
-              <h2>Test Category Breakdown</h2>
-              <table>
-                <tr><th>Category</th><th>Tests</th><th>Passed</th><th>Status</th></tr>
-                <tr><td>API Latency Tests</td><td>105</td><td>105</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Memory &amp; Heap Tests</td><td>105</td><td>105</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Concurrency &amp; Database Pool Tests</td><td>105</td><td>105</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td>Performance Benchmarks (LCP, FPS, TTI)</td><td>105</td><td>105</td><td><span class="badge pass">PASS</span></td></tr>
-                <tr><td><strong>TOTAL</strong></td><td><strong>420</strong></td><td><strong>420</strong></td><td><span class="badge pass">100%</span></td></tr>
-              </table>
-            </div>
-            <div class="footer">✅ All 420 Load Tests Passed &nbsp;|&nbsp; 1000 Concurrent Users Simulated &nbsp;|&nbsp; Traverse CI/CD Pipeline</div>
-          </body>
-          </html>
-          EOF
+          python generate_suite_report.py \
+            --json load-tests/load_report.json \
+            --output reports/load-test-report.html \
+            --title "⚡ Load & Performance Test Report" \
+            --subtitle "Traverse — Performance Testing Suite | Runner: Locust Load Simulator" \
+            --type load
           echo "✅ Load test HTML report generated."
 
       - name: Upload Load Test Report Artifact

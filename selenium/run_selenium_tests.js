@@ -658,6 +658,16 @@ async function buildExcelReport() {
   console.log(`JSON report saved successfully to: ${jsonFile}`);
 }
 
+// Helper to print all test results line-by-line
+function printTestResults() {
+  console.log('\n--- DETAILED TEST EXECUTION LOGS ---');
+  testCases.forEach(tc => {
+    const symbol = tc.status === 'PASS' ? '✔' : '✖';
+    console.log(`${symbol} [${tc.id}] ${tc.comp} — ${tc.desc} — ${tc.status}`);
+  });
+  console.log('-------------------------------------\n');
+}
+
 // -------------------------------------------------------------
 // Main Execution
 // -------------------------------------------------------------
@@ -668,6 +678,9 @@ async function buildExcelReport() {
 
   // 1. Run Selenium Tests
   await runSeleniumTests();
+
+  // Print results in real test-runner format
+  printTestResults();
 
   // 2. Build Styled Excel Report
   await buildExcelReport();

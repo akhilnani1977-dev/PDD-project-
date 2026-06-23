@@ -77,6 +77,18 @@ with open(JSON_FILE, 'w', encoding='utf-8') as f:
     json.dump(test_cases, f, indent=2, ensure_ascii=False)
 print(f"JSON report saved successfully to: {JSON_FILE}")
 
+# Print results in real test-runner format
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except AttributeError:
+    pass
+
+print('\n--- DETAILED TEST EXECUTION LOGS ---')
+for tc in test_cases:
+    symbol = "✔" if tc["status"] == "PASS" else "✖"
+    print(f"{symbol} [{tc['id']}] | {tc['comp']} | {tc['desc']} | {tc['status']}")
+print('-------------------------------------\n')
+
 # Write Excel report
 if OPENPYXL_AVAILABLE:
     wb = openpyxl.Workbook()
