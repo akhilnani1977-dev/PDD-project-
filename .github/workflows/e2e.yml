@@ -90,7 +90,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: selenium-web-report
-          path: reports/selenium-web-report.html
+          path: |
+            reports/selenium-web-report.html
+            selenium/selenium_report.json
+            selenium/Selenium_E2E_Test_Report_Traverse.xlsx
           retention-days: 30
 
 # ─────────────────────────────────────────────
@@ -150,7 +153,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: appium-android-report
-          path: reports/appium-android-report.html
+          path: |
+            reports/appium-android-report.html
+            appium/appium_report.json
+            appium/Appium_E2E_Test_Report_Traverse.xlsx
           retention-days: 30
 
 # ─────────────────────────────────────────────
@@ -205,7 +211,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: unit-test-report
-          path: reports/unit-test-report.html
+          path: |
+            reports/unit-test-report.html
+            unit-tests/unit_report.json
+            unit-tests/Unit_Test_Report_Traverse.xlsx
           retention-days: 30
 
 # ─────────────────────────────────────────────
@@ -260,7 +269,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: validation-test-report
-          path: reports/validation-test-report.html
+          path: |
+            reports/validation-test-report.html
+            validation-tests/validation_report.json
+            validation-tests/Validation_Test_Report_Traverse.xlsx
           retention-days: 30
 
 # ─────────────────────────────────────────────
@@ -323,7 +335,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deployment-test-report
-          path: reports/deployment-test-report.html
+          path: |
+            reports/deployment-test-report.html
+            deployment-tests/deployment_report.json
+            deployment-tests/Deployment_Test_Report_Traverse.xlsx
           retention-days: 30
 
 # ─────────────────────────────────────────────
@@ -379,7 +394,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: load-test-report
-          path: reports/load-test-report.html
+          path: |
+            reports/load-test-report.html
+            load-tests/load_report.json
+            load-tests/Load_Test_Report_Traverse.xlsx
           retention-days: 30
 
 # ─────────────────────────────────────────────
@@ -400,169 +418,48 @@ jobs:
           path: all-reports
           merge-multiple: true
 
-      - name: Compile Master Report & GitHub Pages Site
+      - name: Move Reports to Expected Directories
         run: |
-          mkdir -p final-reports
-          DATE=$(date '+%Y-%m-%d %H:%M:%S')
+          mkdir -p selenium appium unit-tests validation-tests deployment-tests load-tests
+          mv all-reports/selenium_report.json selenium/ 2>/dev/null || true
+          mv all-reports/Selenium_E2E_Test_Report_Traverse.xlsx selenium/ 2>/dev/null || true
+          mv all-reports/appium_report.json appium/ 2>/dev/null || true
+          mv all-reports/Appium_E2E_Test_Report_Traverse.xlsx appium/ 2>/dev/null || true
+          mv all-reports/unit_report.json unit-tests/ 2>/dev/null || true
+          mv all-reports/Unit_Test_Report_Traverse.xlsx unit-tests/ 2>/dev/null || true
+          mv all-reports/validation_report.json validation-tests/ 2>/dev/null || true
+          mv all-reports/Validation_Test_Report_Traverse.xlsx validation-tests/ 2>/dev/null || true
+          mv all-reports/deployment_report.json deployment-tests/ 2>/dev/null || true
+          mv all-reports/Deployment_Test_Report_Traverse.xlsx deployment-tests/ 2>/dev/null || true
+          mv all-reports/load_report.json load-tests/ 2>/dev/null || true
+          mv all-reports/Load_Test_Report_Traverse.xlsx load-tests/ 2>/dev/null || true
 
-          # Copy individual reports into the pages site
-          cp all-reports/*.html final-reports/ 2>/dev/null || true
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
 
-          # Write the master index page
-          cat > final-reports/index.html << 'HTMLEOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <title>Traverse — Master E2E Test Report</title>
-            <style>
-              @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-              * { box-sizing: border-box; margin: 0; padding: 0; }
-              body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #0a0e18; color: #e2e8f0; min-height: 100vh; }
-              .hero { background: linear-gradient(135deg, #0f1f3d 0%, #0a0e18 60%, #0d1f3c 100%); padding: 60px 40px 40px; text-align: center; border-bottom: 1px solid #1e3a5f; }
-              .hero h1 { font-size: 36px; font-weight: 800; background: linear-gradient(90deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
-              .hero p { color: #94a3b8; font-size: 14px; }
-              .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
-              .overall { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 36px; }
-              .stat-card { background: linear-gradient(135deg, #1e2d45 0%, #172035 100%); border: 1px solid #2d4a6b; border-radius: 14px; padding: 24px; text-align: center; }
-              .stat-num { font-size: 42px; font-weight: 800; }
-              .stat-label { font-size: 11px; color: #94a3b8; margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
-              .green { color: #4ade80; } .blue { color: #60a5fa; } .purple { color: #a78bfa; } .yellow { color: #fbbf24; }
-              .jobs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 36px; }
-              .job-card { background: #131929; border: 1px solid #1e3a5f; border-radius: 12px; padding: 22px; display: flex; align-items: center; gap: 16px; text-decoration: none; color: inherit; transition: border-color 0.2s, transform 0.15s; }
-              .job-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
-              .job-icon { font-size: 28px; flex-shrink: 0; }
-              .job-info h3 { font-size: 15px; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
-              .job-info p { font-size: 12px; color: #64748b; }
-              .job-badge { margin-left: auto; background: #166534; color: #4ade80; border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
-              .summary-table { background: #131929; border: 1px solid #1e3a5f; border-radius: 12px; overflow: hidden; }
-              .summary-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
-              .summary-table th { background: #1f4e78; color: #fff; padding: 12px 16px; text-align: left; font-weight: 600; }
-              .summary-table td { padding: 12px 16px; border-bottom: 1px solid #1e2d45; }
-              .summary-table tr:last-child td { border-bottom: none; }
-              .summary-table tr:nth-child(even) td { background: #0f1825; }
-              .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-              .pass { background: #166534; color: #4ade80; }
-              .footer { text-align: center; padding: 30px; color: #475569; font-size: 13px; border-top: 1px solid #1e2d45; margin-top: 40px; }
-            </style>
-          </head>
-          <body>
-            <div class="hero">
-              <h1>✅ Traverse — Master E2E Test Report</h1>
-              <p>Enterprise CI/CD Pipeline &nbsp;|&nbsp; All Jobs Passed &nbsp;|&nbsp; 2,520 Total Test Cases</p>
-            </div>
-            <div class="container">
-              <div class="overall">
-                <div class="stat-card"><div class="stat-num blue">2,520</div><div class="stat-label">Total Tests</div></div>
-                <div class="stat-card"><div class="stat-num green">2,520</div><div class="stat-label">Passed</div></div>
-                <div class="stat-card"><div class="stat-num green">0</div><div class="stat-label">Failed</div></div>
-                <div class="stat-card"><div class="stat-num purple">100%</div><div class="stat-label">Pass Rate</div></div>
-              </div>
-              <div class="jobs">
-                <a class="job-card" href="selenium-web-report.html">
-                  <div class="job-icon">🌐</div>
-                  <div class="job-info">
-                    <h3>Selenium — Website Tests</h3>
-                    <p>UI/UX, Functional, System, Validation</p>
-                  </div>
-                  <div class="job-badge">420/420 ✔</div>
-                </a>
-                <a class="job-card" href="appium-android-report.html">
-                  <div class="job-icon">📱</div>
-                  <div class="job-info">
-                    <h3>Appium — Android Tests</h3>
-                    <p>Mobile UI, Functional, System, Security</p>
-                  </div>
-                  <div class="job-badge">420/420 ✔</div>
-                </a>
-                <a class="job-card" href="unit-test-report.html">
-                  <div class="job-icon">⚙️</div>
-                  <div class="job-info">
-                    <h3>Unit Tests — API</h3>
-                    <p>Supabase, Auth, Routing, DB functions</p>
-                  </div>
-                  <div class="job-badge">420/420 ✔</div>
-                </a>
-                <a class="job-card" href="validation-test-report.html">
-                  <div class="job-icon">🛡️</div>
-                  <div class="job-info">
-                    <h3>Validation Tests</h3>
-                    <p>Input, SQL Injection, XSS, CSRF</p>
-                  </div>
-                  <div class="job-badge">420/420 ✔</div>
-                </a>
-                <a class="job-card" href="deployment-test-report.html">
-                  <div class="job-icon">🚀</div>
-                  <div class="job-info">
-                    <h3>Deployment Status</h3>
-                    <p>Env, SSL, CORS, API Health, DB</p>
-                  </div>
-                  <div class="job-badge">420/420 ✔</div>
-                </a>
-                <a class="job-card" href="load-test-report.html">
-                  <div class="job-icon">⚡</div>
-                  <div class="job-info">
-                    <h3>Load Testing — Performance</h3>
-                    <p>1000 users, Latency, Throughput, Memory</p>
-                  </div>
-                  <div class="job-badge">420/420 ✔</div>
-                </a>
-              </div>
-              <div class="summary-table">
-                <table>
-                  <tr><th>Job</th><th>Total</th><th>Passed</th><th>Failed</th><th>Status</th></tr>
-                  <tr><td>🌐 Selenium — Website Tests</td><td>420</td><td>420</td><td>0</td><td><span class="badge pass">✔ SUCCESS</span></td></tr>
-                  <tr><td>📱 Appium — Android Tests</td><td>420</td><td>420</td><td>0</td><td><span class="badge pass">✔ SUCCESS</span></td></tr>
-                  <tr><td>⚙️ Unit Tests — API</td><td>420</td><td>420</td><td>0</td><td><span class="badge pass">✔ SUCCESS</span></td></tr>
-                  <tr><td>🛡️ Validation Tests</td><td>420</td><td>420</td><td>0</td><td><span class="badge pass">✔ SUCCESS</span></td></tr>
-                  <tr><td>🚀 Deployment Status</td><td>420</td><td>420</td><td>0</td><td><span class="badge pass">✔ SUCCESS</span></td></tr>
-                  <tr><td>⚡ Load Testing — Performance</td><td>420</td><td>420</td><td>0</td><td><span class="badge pass">✔ SUCCESS</span></td></tr>
-                  <tr><td><strong>GRAND TOTAL</strong></td><td><strong>2,520</strong></td><td><strong>2,520</strong></td><td><strong>0</strong></td><td><span class="badge pass">✔ 100%</span></td></tr>
-                </table>
-              </div>
-            </div>
-            <div class="footer">
-              🏆 Traverse Enterprise CI/CD Pipeline &nbsp;|&nbsp; All 2,520 Test Cases Passed &nbsp;|&nbsp; 100% Pass Rate
-            </div>
-          </body>
-          </html>
-          HTMLEOF
+      - name: Install Compiler Dependencies
+        run: |
+          pip install openpyxl pandas 2>/dev/null || true
 
-          # Write full-e2e-report text summary
-          cat > final-reports/full-e2e-report.txt << EOF
-          ============================================================
-           TRAVERSE — FULL E2E TEST REPORT SUMMARY
-          ============================================================
-          Generated: $DATE
+      - name: Compile Consolidated Master Report
+        run: |
+          python compile_reports.py
+          # Copy individual HTML reports into deploy_site/
+          cp all-reports/*.html deploy_site/ 2>/dev/null || true
+          echo "✅ Consolidated master report compiled."
 
-          PIPELINE RESULTS:
-          ─────────────────────────────────────────────
-          ✔  Selenium — Website Tests (420)     420/420  PASS
-          ✔  Appium — Android Tests (420)       420/420  PASS
-          ✔  Unit Tests — API (420)             420/420  PASS
-          ✔  Validation Tests (420)             420/420  PASS
-          ✔  Deployment Status (420)            420/420  PASS
-          ✔  Load Testing — Performance (420)   420/420  PASS
-          ─────────────────────────────────────────────
-          GRAND TOTAL:  2,520/2,520 Tests Passed
-          PASS RATE:    100%
-          STATUS:       ✅ ALL JOBS GREEN
-          ============================================================
-          EOF
-
-          echo "✅ Master report compiled successfully."
-          ls -la final-reports/
-
-      - name: Upload Full E2E Report Artifact
+      - name: Upload Consolidated E2E Excel Report Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: full-e2e-report
-          path: final-reports/full-e2e-report.txt
+          name: consolidated-excel-report
+          path: deploy_site/Full_E2E_Test_Report_Traverse.xlsx
           retention-days: 30
 
       - name: Deploy to GitHub Pages Branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./final-reports
+          publish_dir: ./deploy_site
