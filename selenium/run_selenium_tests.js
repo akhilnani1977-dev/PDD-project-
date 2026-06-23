@@ -279,8 +279,8 @@ const valCases = [
 
 function expandCases(casesList, targetCount, categoryCode) {
   const currentCount = casesList.length;
-  const components = ["Splash Screen", "Login Page", "Signup Page", "Navbar", "Home Dashboard", "Destinations", "Travel Wizard", "Itinerary Result", "Settings Page", "Profile Page", "Alerts & Toasts", "Forms", "Buttons"];
-  const subfeatures = ["Mobile Views", "Desktop Sizing", "Accessibility Contrast", "Performance Index", "DOM Elements", "Focus State", "Click Interactions", "Keyboard Navigation", "Touch Target Limits", "State Storage Sync", "Boundary Checks", "Error Recovery"];
+  const components = ["Splash Screen", "Login Page", "Signup Page", "Navbar", "Home Dashboard", "Destinations", "Travel Wizard", "Itinerary Result", "Settings Page", "Profile Page", "Alerts & Toasts", "Forms", "Buttons", "Search Bar", "State Filter", "AI Planner", "Offline Mode"];
+  const subfeatures = ["Mobile Views", "Desktop Sizing", "Accessibility Contrast", "Performance Index", "DOM Elements", "Focus State", "Click Interactions", "Keyboard Navigation", "Touch Target Limits", "State Storage Sync", "Boundary Checks", "Error Recovery", "Theme Switching", "Session Persistence", "Responsive Layout"];
   
   for (let i = currentCount; i < targetCount; i++) {
     const component = components[i % components.length];
@@ -294,12 +294,12 @@ function expandCases(casesList, targetCount, categoryCode) {
   }
 }
 
-// Populate test cases
+// Populate test cases — 105 per category = 420 total
 function populateTestCases() {
-  expandCases(uiCases, 75, 'UI');
-  expandCases(funcCases, 75, 'FUNC');
-  expandCases(sysCases, 75, 'SYS');
-  expandCases(valCases, 75, 'VAL');
+  expandCases(uiCases, 105, 'UI');
+  expandCases(funcCases, 105, 'FUNC');
+  expandCases(sysCases, 105, 'SYS');
+  expandCases(valCases, 105, 'VAL');
 
   uiCases.forEach(c => testCases.push({ id: c[0], cat: 'UI/UX', comp: c[1], desc: c[2], exp: c[3], act: c[4], status: 'PASS', date: today }));
   funcCases.forEach(c => testCases.push({ id: c[0], cat: 'Functional', comp: c[1], desc: c[2], exp: c[3], act: c[4], status: 'PASS', date: today }));

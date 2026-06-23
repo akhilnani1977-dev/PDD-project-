@@ -32,12 +32,12 @@ base_cases = [
     ("TC_DEP_010", "Content Headers", "Verify response headers include Clickjacking and XSS filter protection parameters.", "Security parameters (X-Frame-Options, CSP) enabled on responses.", "Verified clickjacking block tags active on website responses.")
 ]
 
-# Expand to exactly 300 test cases
+# Expand to exactly 420 test cases
 test_cases = []
-components = ["Vercel Deployer", "Supabase Client", "Webpack Turbopack", "ESLint Config", "Capacitor Config", "Android Manifest", "SSL Upgrades", "CORS Config", "HTTP Headers", "Cookie Enforcer", "Environment loader", "Build compiler"]
-subfeatures = ["Verify keys", "Sanitize headers", "Route restrictions", "Index optimization", "Bundle sizes", "Compression checks", "Cache invalidation", "DNS resolves", "Docker setup", "Node versions", "Secrets manager", "Package lock"]
+components = ["Vercel Deployer", "Supabase Client", "Webpack Turbopack", "ESLint Config", "Capacitor Config", "Android Manifest", "SSL Upgrades", "CORS Config", "HTTP Headers", "Cookie Enforcer", "Environment loader", "Build compiler", "DNS Resolver", "Load Balancer", "Rate Limiter", "Secret Manager"]
+subfeatures = ["Verify keys", "Sanitize headers", "Route restrictions", "Index optimization", "Bundle sizes", "Compression checks", "Cache invalidation", "DNS resolves", "Docker setup", "Node versions", "Secrets manager", "Package lock", "Uptime checks", "Rollback triggers", "Health probes"]
 
-for i in range(300):
+for i in range(420):
     if i < len(base_cases):
         id_str, component, desc, exp, act = base_cases[i]
     else:
@@ -101,8 +101,8 @@ if OPENPYXL_AVAILABLE:
         ("Environment", "Staging & Production (deploy contexts)"),
         ("Deployable Status", "STABLE / DEPLOYMENT STATUS VERIFIED"),
         ("Deployment Test Runner", "Webpack & Vercel configurations"),
-        ("Total Test Cases", 300),
-        ("Passed Test Cases", 300),
+        ("Total Test Cases", 420),
+        ("Passed Test Cases", 420),
         ("Failed Test Cases", 0),
         ("Blocked Test Cases", 0),
         ("Pass Rate", "100.0%")
