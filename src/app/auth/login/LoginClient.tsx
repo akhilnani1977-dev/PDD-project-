@@ -215,6 +215,7 @@ function LoginForm() {
                 <input 
                   type="email" 
                   name="email"
+                  id="email"
                   required
                   placeholder="voyager@traverse.ai" 
                   className="w-full py-4 pl-12 pr-4 text-organic-black bg-gray-50 border border-gray-100 rounded-[1.5rem] focus:border-organic-green focus:outline-none focus:ring-1 focus:ring-organic-green font-medium"
@@ -229,6 +230,7 @@ function LoginForm() {
                 <input 
                   type="password" 
                   name="password"
+                  id="password"
                   required
                   placeholder="••••••••" 
                   className="w-full py-4 pl-12 pr-4 text-organic-black bg-gray-50 border border-gray-100 rounded-[1.5rem] focus:border-organic-green focus:outline-none focus:ring-1 focus:ring-organic-green font-medium"
