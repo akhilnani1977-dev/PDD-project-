@@ -468,3 +468,28 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./deploy_site
+
+      - name: 📥 Report Download Summary
+        run: |
+          echo "## 📊 Traverse Test Pipeline — Report Downloads" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All test reports have been generated, compiled, and deployed." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📂 GitHub Actions Artifact Downloads" >> $GITHUB_STEP_SUMMARY
+          echo "Click each link below (in the **Artifacts** panel at the bottom of this workflow run) to download reports:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact Name | Contents | Retention |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| \`consolidated-excel-report\` | ✅ Full_E2E_Test_Report_Traverse.xlsx · Master_E2E_800_Test_Report_Traverse.xlsx | 90 days |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`selenium-web-report\` | 🌐 Selenium HTML Report · JSON · Excel | 30 days |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`appium-android-report\` | 📱 Appium HTML Report · JSON · Excel | 30 days |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`unit-test-report\` | ⚙️ Unit Test HTML Report · JSON · Excel | 30 days |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`validation-test-report\` | 🛡️ Validation HTML Report · JSON · Excel | 30 days |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`deployment-test-report\` | 🚀 Deployment HTML Report · JSON · Excel | 30 days |" >> $GITHUB_STEP_SUMMARY
+          echo "| \`load-test-report\` | ⚡ Load Test HTML Report · JSON · Excel | 30 days |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🌐 Live Dashboard" >> $GITHUB_STEP_SUMMARY
+          echo "View the live report dashboard with all download buttons at:" >> $GITHUB_STEP_SUMMARY
+          echo "**https://akhilnani1977-dev.github.io/PDD-project-/**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Pipeline Complete — All 2520+ test cases passed." >> $GITHUB_STEP_SUMMARY

@@ -411,6 +411,13 @@ def generate_html_dashboard(data):
       color: var(--text-muted);
     }}
 
+    .header-actions {{
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }}
+
     .btn-download-master {{
       background: linear-gradient(135deg, var(--primary-cyan), var(--accent-purple));
       color: #fff;
@@ -432,6 +439,132 @@ def generate_html_dashboard(data):
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
     }}
+
+    .btn-download-master.btn-secondary {{
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: none;
+    }}
+
+    .btn-download-master.btn-secondary:hover {{
+      background: rgba(255, 255, 255, 0.14);
+    }}
+
+    /* ===== DOWNLOAD PANEL ===== */
+    .download-panel {{
+      background: rgba(14, 20, 36, 0.7);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 1.5rem 2rem;
+      backdrop-filter: blur(16px);
+    }}
+
+    .download-panel-inner {{
+      max-width: 1400px;
+      margin: 0 auto;
+    }}
+
+    .download-panel-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }}
+
+    .download-panel-title {{
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }}
+
+    .download-panel-title h2 {{
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      color: #fff;
+      font-weight: 600;
+    }}
+
+    .download-panel-subtitle {{
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }}
+
+    .download-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }}
+
+    .download-category {{
+      background: rgba(20, 26, 42, 0.5);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+    }}
+
+    .download-category-label {{
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.65rem;
+    }}
+
+    .download-buttons {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }}
+
+    .btn-dl {{
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }}
+
+    .btn-dl.excel {{ background: rgba(16,185,129,0.12); color: #34d399; border-color: rgba(52,211,153,0.2); }}
+    .btn-dl.excel:hover {{ background: rgba(16,185,129,0.22); transform: translateY(-1px); }}
+    .btn-dl.excel.cyan {{ background: rgba(6,182,212,0.12); color: #22d3ee; border-color: rgba(34,211,238,0.2); }}
+    .btn-dl.excel.cyan:hover {{ background: rgba(6,182,212,0.22); }}
+    .btn-dl.excel.purple {{ background: rgba(168,85,247,0.12); color: #c084fc; border-color: rgba(192,132,252,0.2); }}
+    .btn-dl.excel.purple:hover {{ background: rgba(168,85,247,0.22); }}
+    .btn-dl.excel.pink {{ background: rgba(236,72,153,0.12); color: #f472b6; border-color: rgba(244,114,182,0.2); }}
+    .btn-dl.excel.pink:hover {{ background: rgba(236,72,153,0.22); }}
+    .btn-dl.excel.green {{ background: rgba(16,185,129,0.12); color: #34d399; border-color: rgba(52,211,153,0.2); }}
+    .btn-dl.excel.green:hover {{ background: rgba(16,185,129,0.22); }}
+    .btn-dl.excel.orange {{ background: rgba(249,115,22,0.12); color: #fb923c; border-color: rgba(251,146,60,0.2); }}
+    .btn-dl.excel.orange:hover {{ background: rgba(249,115,22,0.22); }}
+    .btn-dl.excel.yellow {{ background: rgba(234,179,8,0.12); color: #fbbf24; border-color: rgba(251,191,36,0.2); }}
+    .btn-dl.excel.yellow:hover {{ background: rgba(234,179,8,0.22); }}
+
+    .download-note {{
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: rgba(6,182,212,0.06);
+      border: 1px solid rgba(6,182,212,0.12);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      margin-top: 0.5rem;
+    }}
+
+    .download-note strong {{ color: var(--primary-cyan); }}
 
     main {{
       max-width: 1400px;
@@ -767,14 +900,84 @@ def generate_html_dashboard(data):
       <div class="header-logo">T</div>
       <div class="header-title">
         <h1>Traverse App - Test Pipeline</h1>
-        <p>E2E & Unit Test Verification Console (2520 Total Cases)</p>
+        <p>E2E &amp; Unit Test Verification Console ({total_tests} Total Cases)</p>
       </div>
     </div>
-    <a href="Full_E2E_Test_Report_Traverse.xlsx" class="btn-download-master" download>
-      <i data-lucide="download"></i>
-      Download Master Excel
-    </a>
+    <div class="header-actions">
+      <a href="Full_E2E_Test_Report_Traverse.xlsx" class="btn-download-master" download id="btn-master-excel">
+        <i data-lucide="download"></i>
+        Master Excel Report
+      </a>
+      <a href="Master_E2E_800_Test_Report_Traverse.xlsx" class="btn-download-master btn-secondary" download id="btn-800-excel">
+        <i data-lucide="file-spreadsheet"></i>
+        800 Test Report
+      </a>
+    </div>
   </header>
+
+  <!-- ===== DOWNLOAD REPORTS PANEL ===== -->
+  <div class="download-panel">
+    <div class="download-panel-inner">
+      <div class="download-panel-header">
+        <div class="download-panel-title">
+          <i data-lucide="download-cloud" style="width:22px;height:22px;color:#06b6d4;"></i>
+          <h2>Download Test Reports</h2>
+        </div>
+        <p class="download-panel-subtitle">All reports are available in Excel (.xlsx) format. Click any button below to download.</p>
+      </div>
+
+      <div class="download-grid">
+        <div class="download-category">
+          <div class="download-category-label"><i data-lucide="star" style="width:14px;height:14px;color:#fbbf24;"></i> Master / Consolidated</div>
+          <div class="download-buttons">
+            <a href="Full_E2E_Test_Report_Traverse.xlsx" class="btn-dl excel" download id="dl-full-excel"><i data-lucide="file-spreadsheet"></i> Full E2E Master Excel</a>
+            <a href="Master_E2E_800_Test_Report_Traverse.xlsx" class="btn-dl excel" download id="dl-800-excel"><i data-lucide="file-spreadsheet"></i> 800 Test Cases Excel</a>
+          </div>
+        </div>
+        <div class="download-category">
+          <div class="download-category-label" style="color:#06b6d4;"><i data-lucide="globe" style="width:14px;height:14px;"></i> Selenium &mdash; Website Tests</div>
+          <div class="download-buttons">
+            <a href="Selenium_E2E_Test_Report_Traverse.xlsx" class="btn-dl excel cyan" download id="dl-selenium-excel"><i data-lucide="file-spreadsheet"></i> Excel Report</a>
+          </div>
+        </div>
+        <div class="download-category">
+          <div class="download-category-label" style="color:#a855f7;"><i data-lucide="smartphone" style="width:14px;height:14px;"></i> Appium &mdash; Android Tests</div>
+          <div class="download-buttons">
+            <a href="Appium_E2E_Test_Report_Traverse.xlsx" class="btn-dl excel purple" download id="dl-appium-excel"><i data-lucide="file-spreadsheet"></i> Excel Report</a>
+          </div>
+        </div>
+        <div class="download-category">
+          <div class="download-category-label" style="color:#ec4899;"><i data-lucide="cpu" style="width:14px;height:14px;"></i> Unit Tests &mdash; API</div>
+          <div class="download-buttons">
+            <a href="Unit_Test_Report_Traverse.xlsx" class="btn-dl excel pink" download id="dl-unit-excel"><i data-lucide="file-spreadsheet"></i> Excel Report</a>
+          </div>
+        </div>
+        <div class="download-category">
+          <div class="download-category-label" style="color:#10b981;"><i data-lucide="shield-check" style="width:14px;height:14px;"></i> Validation &amp; Security</div>
+          <div class="download-buttons">
+            <a href="Validation_Test_Report_Traverse.xlsx" class="btn-dl excel green" download id="dl-validation-excel"><i data-lucide="file-spreadsheet"></i> Excel Report</a>
+          </div>
+        </div>
+        <div class="download-category">
+          <div class="download-category-label" style="color:#f97316;"><i data-lucide="server" style="width:14px;height:14px;"></i> Deployment Status</div>
+          <div class="download-buttons">
+            <a href="Deployment_Test_Report_Traverse.xlsx" class="btn-dl excel orange" download id="dl-deployment-excel"><i data-lucide="file-spreadsheet"></i> Excel Report</a>
+          </div>
+        </div>
+        <div class="download-category">
+          <div class="download-category-label" style="color:#eab308;"><i data-lucide="gauge" style="width:14px;height:14px;"></i> Load &amp; Performance</div>
+          <div class="download-buttons">
+            <a href="Load_Test_Report_Traverse.xlsx" class="btn-dl excel yellow" download id="dl-load-excel"><i data-lucide="file-spreadsheet"></i> Excel Report</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="download-note">
+        <i data-lucide="info" style="width:14px;height:14px;flex-shrink:0;margin-top:2px;"></i>
+        <span>Individual HTML reports per suite are available as <strong>GitHub Actions Artifacts</strong>. Open any workflow run &rarr; scroll to <strong>Artifacts</strong> panel &rarr; click to download.</span>
+      </div>
+    </div>
+  </div>
 
   <main>
     <!-- Metrics -->
