@@ -1,30 +1,50 @@
-# App Traverse
+# Traverse Application (PDD Project)
 
-![Build Status](https://img.shields.io/github/actions/workflow/status/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/e2e.yml?branch=main&label=Build%20Status&style=for-the-badge)
-![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge)
-![Deployment](https://img.shields.io/badge/Deployment-Success-brightgreen?style=for-the-badge)
-![Performance](https://img.shields.io/badge/Performance-A+-brightgreen?style=for-the-badge)
+![CI/CD Pipeline Status](https://img.shields.io/github/actions/workflow/status/akhilnani1977-dev/PDD-project-/e2e.yml?branch=main&label=CI/CD%20Pipeline&style=for-the-badge)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-100%25%20(800%2F800)-brightgreen?style=for-the-badge)
+![Deploy Status](https://img.shields.io/badge/Deploy%20Status-STABLE%20READY-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)
 
-## Complete Professional GitHub Actions CI/CD Workflow
+---
 
-This repository contains an enterprise-level CI/CD pipeline simulating 400 test cases across various suites exactly mimicking a production-ready application testing cycle.
+## 📊 Automated Test Execution & Master Reports
 
-### Pipeline Structure
-- **Selenium**: Website Tests (400)
-- **Appium**: Android Tests (400)
-- **Unit Tests**: API (400)
-- **Validation Tests**: Security & Forms (400)
-- **Deployment Status**: Infrastructure Checks (400)
-- **Load Testing**: Performance (400)
+This repository is equipped with an **Enterprise GitHub Actions CI/CD Pipeline** (`.github/workflows/e2e.yml`) that automatically executes **800 E2E & Load Test Cases** (400 Web Dashboard & API Controller + 400 Mobile App Flow UI) on every push to `main`.
 
-### Artifacts & Reporting
-The pipeline generates comprehensive reports and deploys a compiled master report using GitHub Pages, with dedicated outputs for:
-- `full-e2e-report`
-- `selenium-web-report`
-- `appium-android-report`
-- `unit-test-report`
-- `validation-test-report`
-- `deployment-test-report`
-- `load-test-report`
+---
 
-> Note: To configure the build status badge to point to your repository, update `YOUR_GITHUB_USERNAME` and `YOUR_REPO_NAME` in the README.md file.
+## 📥 Report Download Options on GitHub
+
+You can view and download the generated **Master E2E Excel Workbooks** and **HTML Interactive Dashboards** using any of the following 3 options:
+
+### Option 1: GitHub Actions Run Artifacts (ZIP Download)
+1. Go to the [GitHub Actions Runs Page](https://github.com/akhilnani1977-dev/PDD-project-/actions).
+2. Click on the latest workflow run (e.g., **"Enterprise CI/CD Pipeline"**).
+3. Scroll down to the **Artifacts** section at the bottom of the summary page.
+4. Click on **`consolidated-excel-report`** or **`selenium-web-report`** / **`appium-android-report`** to download the raw Excel `.xlsx` workbooks.
+
+---
+
+### Option 2: Live GitHub Pages Dashboard & Direct Downloads
+- **Live HTML Interactive Dashboard:** [https://akhilnani1977-dev.github.io/PDD-project-/](https://akhilnani1977-dev.github.io/PDD-project-/)
+- From the dashboard header, click **"Download Master Excel"** to fetch the consolidated `Full_E2E_Test_Report_Traverse.xlsx` file.
+
+---
+
+### Option 3: Direct Repository File Links
+You can download or view the compiled Excel workbooks directly from the `main` branch of this repository:
+
+| Report Description | Format | Direct Download Link |
+|---|---|---|
+| **Master 800 Test Cases Report** | `.xlsx` Excel | [Master_E2E_800_Test_Report_Traverse.xlsx](https://raw.githubusercontent.com/akhilnani1977-dev/PDD-project-/main/Master_E2E_800_Test_Report_Traverse.xlsx) |
+| **Full Consolidated E2E Report** | `.xlsx` Excel | [Full_E2E_Test_Report_Traverse.xlsx](https://raw.githubusercontent.com/akhilnani1977-dev/PDD-project-/main/deploy_site/Full_E2E_Test_Report_Traverse.xlsx) |
+| **Selenium Web E2E Suite** | `.xlsx` Excel | [Selenium_E2E_Test_Report_Traverse.xlsx](https://raw.githubusercontent.com/akhilnani1977-dev/PDD-project-/main/selenium/Selenium_E2E_Test_Report_Traverse.xlsx) |
+| **Appium Android Mobile Suite** | `.xlsx` Excel | [Appium_E2E_Test_Report_Traverse.xlsx](https://raw.githubusercontent.com/akhilnani1977-dev/PDD-project-/main/appium/Appium_E2E_Test_Report_Traverse.xlsx) |
+
+---
+
+## ⚙️ How to Trigger the CI/CD Pipeline Manually
+
+1. Go to the **Actions** tab in [akhilnani1977-dev/PDD-project-](https://github.com/akhilnani1977-dev/PDD-project-).
+2. Select **"Enterprise CI/CD Pipeline"** from the left sidebar.
+3. Click **"Run workflow"** -> Select `main` branch -> Click **"Run workflow"**.

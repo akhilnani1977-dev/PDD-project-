@@ -446,17 +446,22 @@ jobs:
 
       - name: Compile Consolidated Master Report
         run: |
+          python generate_800_test_cases_report.py
           python compile_reports.py
-          # Copy individual HTML reports into deploy_site/
+          # Copy individual HTML reports and Excel workbooks into deploy_site/
           cp all-reports/*.html deploy_site/ 2>/dev/null || true
+          cp Master_E2E_800_Test_Report_Traverse.xlsx deploy_site/ 2>/dev/null || true
           echo "✅ Consolidated master report compiled."
 
       - name: Upload Consolidated E2E Excel Report Artifact
         uses: actions/upload-artifact@v4
         with:
           name: consolidated-excel-report
-          path: deploy_site/Full_E2E_Test_Report_Traverse.xlsx
-          retention-days: 30
+          path: |
+            deploy_site/Full_E2E_Test_Report_Traverse.xlsx
+            deploy_site/Master_E2E_800_Test_Report_Traverse.xlsx
+            Master_E2E_800_Test_Report_Traverse.xlsx
+          retention-days: 90
 
       - name: Deploy to GitHub Pages Branch
         uses: peaceiris/actions-gh-pages@v4
