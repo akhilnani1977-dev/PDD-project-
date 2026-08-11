@@ -149,7 +149,7 @@ export default function AiPlannerPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold text-slate-900">Traverse AI Engine</h1>
+                <h1 className="text-xl font-extrabold text-slate-900">Traverse AI Assistant</h1>
                 <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
                   Real-time Active
@@ -271,7 +271,7 @@ export default function AiPlannerPage() {
                 </div>
                 <div className="p-3 bg-slate-100 rounded-2xl text-xs text-slate-500 font-medium flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-600 animate-spin" />
-                  <span>Traverse Real AI Engine is analyzing live data & generating response...</span>
+                  <span>Traverse Real AI Assistant is analyzing live data & generating response...</span>
                 </div>
               </div>
             )}
