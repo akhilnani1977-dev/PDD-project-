@@ -178,18 +178,16 @@ async function runLoadTest() {
 
   const dur    = (Date.now() - startTime) / 1000;
   const sorted = [...latencies].sort((a, b) => a - b);
-  const SEP    = "=".repeat(50);
-  const DIV    = "-".repeat(50);
+  const SEP    = "=".repeat(55);
+  const DIV    = "-".repeat(55);
 
   log("");
   log("Stopping test, waiting for active requests to finish...");
   log("");
-  log(SEP);
-  log("================ LOAD TEST RESULTS ================");
-  log(SEP);
-  log(`Target Base URL:        ${BASE_URL}`);
-  log(`Total duration:         ${dur.toFixed(2)} seconds`);
-  log(`Concurrency:            ${CONCURRENCY} virtual users`);
+  log("================== LOAD TEST RESULTS ==================");
+  log(`Target URL:        ${BASE_URL}`);
+  log(`Total duration:    ${dur.toFixed(2)} seconds`);
+  log(`Concurrency:       ${CONCURRENCY} virtual users`);
   log(DIV);
   log(`Total Requests Sent:    ${totalRequests}`);
   log(`Successful Requests:    ${successRequests}`);
@@ -207,7 +205,7 @@ async function runLoadTest() {
   log(DIV);
   log("Status / Error Codes Distribution:");
   for (const [code, count] of Object.entries(statusCodes).sort()) {
-    log(`  ${code}: ${count} (${((count / totalRequests) * 100).toFixed(1)}%)`);
+    log(`  ${code}: ${count} (${((count / (totalRequests || 1)) * 100).toFixed(1)}%)`);
   }
   log(SEP);
 
@@ -228,17 +226,25 @@ async function runLoadTest() {
 
   bLines.forEach((l) => { console.log(l); lines.push(l); });
 
-  // Save report
-  if (!fs.existsSync(REPORT_DIR)) fs.mkdirSync(REPORT_DIR, { recursive: true });
-  const ts          = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  const reportPath  = path.join(REPORT_DIR, `api-load-test-${ts}.txt`);
-  const latestPath  = path.join(REPORT_DIR, "api-load-test-latest.txt");
-  const content     = lines.join("\n");
-  fs.writeFileSync(reportPath, content, "utf8");
-  fs.writeFileSync(latestPath, content, "utf8");
+  // Save reports as plain text format (.txt)
+  const dirs = [
+    path.join(__dirname, "..", "reports"),
+    path.join(__dirname, "..", "Vulnerability Test Results"),
+    path.join(__dirname)
+  ];
+  dirs.forEach(d => { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); });
 
-  console.log(`\nReport saved to: ${reportPath}`);
-  console.log(`Latest:          ${latestPath}`);
+  const ts        = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const content   = lines.join("\n");
+
+  fs.writeFileSync(path.join(dirs[0], `api-load-test-${ts}.txt`), content, "utf8");
+  fs.writeFileSync(path.join(dirs[0], "api-load-test-latest.txt"), content, "utf8");
+  fs.writeFileSync(path.join(dirs[0], "load_test_report.txt"), content, "utf8");
+  fs.writeFileSync(path.join(dirs[1], "api-load-test-latest.txt"), content, "utf8");
+  fs.writeFileSync(path.join(dirs[2], "load_test_report.txt"), content, "utf8");
+
+  console.log(`\nReport saved to: ${path.join(dirs[0], "load_test_report.txt")}`);
+  console.log(`Latest:          ${path.join(dirs[1], "api-load-test-latest.txt")}`);
 }
 
 // ─── Single-endpoint mode (--url flag) ───────────────────────

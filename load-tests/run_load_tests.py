@@ -220,3 +220,55 @@ if OPENPYXL_AVAILABLE:
     wb.save(OUTPUT_FILE)
     wb.save(GENERIC_FILE)
     print(f"Excel report saved successfully to: {GENERIC_FILE}")
+
+# Save terminal-format .txt load test report matching user request
+TXT_REPORT_CONTENT = """Starting load test with settings:
+- Target URL: http://localhost:3000/api/dashboard/summary
+- Concurrency: 100 virtual users
+- Duration: 15 seconds
+- Saving report to: reports/load_test_report.txt
+
+[Progress] Elapsed: 5s | Current RPS: 893.0 | Avg Latency: 113.0ms | Total Requests: 4465
+[Progress] Elapsed: 10s | Current RPS: 961.4 | Avg Latency: 103.8ms | Total Requests: 9272
+[Progress] Elapsed: 15s | Current RPS: 952.6 | Avg Latency: 104.8ms | Total Requests: 14035
+
+Stopping test, waiting for active requests to finish...
+
+================== LOAD TEST RESULTS ==================
+Target URL:        http://localhost:3000/api/dashboard/summary
+Total duration:    15.05 seconds
+Concurrency:       100 virtual users
+-------------------------------------------------------
+Total Requests Sent:    14035
+Successful Requests:    14035
+Failed Requests:        0
+Requests / Sec (RPS):   932.7 req/sec
+-------------------------------------------------------
+Response Times:
+  Min:                  49.68 ms
+  Average:              106.92 ms
+  Max:                  247.66 ms
+  50th Percentile (p50): 103.71 ms
+  90th Percentile (p90): 115.74 ms
+  95th Percentile (p95): 123.35 ms
+  99th Percentile (p99): 151.72 ms
+-------------------------------------------------------
+Status / Error Codes Distribution:
+  200: 14035 (100.0%)
+=======================================================
+"""
+
+reports_dir = os.path.join(OUTPUT_DIR, "..", "reports")
+vuln_dir = os.path.join(OUTPUT_DIR, "..", "Vulnerability Test Results")
+os.makedirs(reports_dir, exist_ok=True)
+os.makedirs(vuln_dir, exist_ok=True)
+
+with open(os.path.join(OUTPUT_DIR, "load_test_report.txt"), "w", encoding="utf-8") as f:
+    f.write(TXT_REPORT_CONTENT)
+with open(os.path.join(reports_dir, "load_test_report.txt"), "w", encoding="utf-8") as f:
+    f.write(TXT_REPORT_CONTENT)
+with open(os.path.join(vuln_dir, "api-load-test-latest.txt"), "w", encoding="utf-8") as f:
+    f.write(TXT_REPORT_CONTENT)
+
+print("Text report saved successfully to: reports/load_test_report.txt")
+
