@@ -33,7 +33,13 @@ export default function LoginPage() {
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    const target = email || "akhilnani1977@gmail.com";
+    const target = (email || "akhilnani1977@gmail.com").trim();
+
+    if (!target.includes("@") || !target.includes(".")) {
+      addToast("Please enter a valid email address (e.g. user@domain.com)", "warning");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -59,7 +65,13 @@ export default function LoginPage() {
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    const target = email || "akhilnani1977@gmail.com";
+    const target = (email || "akhilnani1977@gmail.com").trim();
+
+    if (otpInput.trim().length !== 6) {
+      addToast("Please enter a valid 6-digit OTP code", "warning");
+      return;
+    }
+
     setLoading(true);
 
     try {
