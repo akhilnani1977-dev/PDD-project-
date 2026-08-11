@@ -1,0 +1,229 @@
+name: selenium-login
+# ──────────────────────────────────────────────────────────────
+# Traverse AI Travel Platform — Full CI/CD Pipeline
+# Workflow: Web E2E Tests + Mobile E2E Tests + API Load Testing
+#           + API Functional Tests → Deploy to GitHub Pages
+# ──────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages:    write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+# ══════════════════════════════════════════════════════════════
+# JOB 1 — Web E2E Tests
+# ══════════════════════════════════════════════════════════════
+jobs:
+  web-e2e-tests:
+    name: Web E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: ⬇ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🧪 Run Web E2E Tests (50 test cases)
+        run: node tests/web-e2e-tests.js
+
+      - name: 📄 Upload Web E2E Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-e2e-report
+          path: reports/web-e2e-results.txt
+          retention-days: 30
+
+  # ══════════════════════════════════════════════════════════════
+  # JOB 2 — Mobile E2E Tests
+  # ══════════════════════════════════════════════════════════════
+  mobile-e2e-tests:
+    name: Mobile E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: ⬇ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: 📱 Run Mobile E2E Tests (25 test cases)
+        run: node tests/mobile-e2e-tests.js
+
+      - name: 📄 Upload Mobile E2E Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-e2e-report
+          path: reports/mobile-e2e-results.txt
+          retention-days: 30
+
+  # ══════════════════════════════════════════════════════════════
+  # JOB 3 — API Load Testing (100 VUs · 60s · 120 RPS)
+  # ══════════════════════════════════════════════════════════════
+  api-load-testing:
+    name: API Load Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: ⬇ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: ⚡ Run Baseline Load Test
+        run: |
+          echo "============================================"
+          echo "  BASELINE / LOAD PERFORMANCE TEST"
+          echo "============================================"
+          echo "  Config:"
+          echo "  - Concurrency : 100 Virtual Users"
+          echo "  - Duration    : 60 Seconds"
+          echo "  - Target RPS  : 120 req/sec"
+          echo "  - Total Reqs  : 7,200 requests"
+          echo "============================================"
+          node load-tests/api-load-test-ci.js
+
+      - name: 📊 Upload Load Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-load-test-report
+          path: |
+            reports/api-load-test-latest.txt
+            Vulnerability Test Results/api-load-test-latest.txt
+          retention-days: 30
+
+  # ══════════════════════════════════════════════════════════════
+  # JOB 4 — API Functional Tests
+  # ══════════════════════════════════════════════════════════════
+  api-functional-tests:
+    name: API Functional Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: ⬇ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🔌 Run API Functional Tests (40 test cases)
+        run: node tests/api-functional-tests.js
+
+      - name: 📄 Upload API Functional Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-functional-report
+          path: reports/api-functional-results.txt
+          retention-days: 30
+
+  # ══════════════════════════════════════════════════════════════
+  # JOB 5 — Deploy to GitHub Pages
+  # (only runs after ALL 4 test jobs pass)
+  # ══════════════════════════════════════════════════════════════
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs:
+      - web-e2e-tests
+      - mobile-e2e-tests
+      - api-load-testing
+      - api-functional-tests
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: ⬇ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🏗️ Build Next.js app
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: ⬇ Download all test reports
+        uses: actions/download-artifact@v4
+        with:
+          path: .next/test-reports
+
+      - name: 📐 Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: 📤 Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .next
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: ✅ Deployment Summary
+        run: |
+          echo "============================================"
+          echo "  ✅ TRAVERSE APP DEPLOYED SUCCESSFULLY"
+          echo "============================================"
+          echo "  Web E2E Tests    : ✅ PASSED (50 tests)"
+          echo "  Mobile E2E Tests : ✅ PASSED (25 tests)"
+          echo "  API Load Testing : ✅ PASSED (100 VUs, 60s)"
+          echo "  API Functional   : ✅ PASSED (40 tests)"
+          echo "  Deploy Status    : ✅ LIVE"
+          echo "  URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "============================================"
