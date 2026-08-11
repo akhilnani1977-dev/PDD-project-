@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { QUICK_PROMPTS, DESTINATIONS_DATA } from "@/data/mockData";
+import { QUICK_PROMPTS } from "@/data/mockData";
 import { useAppStore, PlannedTrip } from "@/lib/store";
 import {
   Sparkles,
@@ -10,10 +10,8 @@ import {
   User,
   Bot,
   Bookmark,
-  Calendar,
-  IndianRupee,
-  MapPin,
   Compass,
+  CloudSun,
 } from "lucide-react";
 
 interface Message {
@@ -25,6 +23,11 @@ interface Message {
     destinationId: string;
     duration: string;
     budget: number;
+    weatherInfo?: {
+      temperature: string;
+      condition: string;
+      bestSeason: string;
+    };
     days: {
       day: number;
       title: string;
@@ -47,13 +50,13 @@ export default function AiPlannerPage() {
     {
       id: "m-1",
       sender: "ai",
-      text: "Namaste! I am Traverse AI, your personal India travel companion. Tell me where you'd like to go, your travel dates, or your target budget, and I'll craft a customized day-by-day itinerary for you!",
+      text: "Namaste! I am Traverse AI, your trained real-time India travel companion. Tell me where you'd like to go, your travel dates, or your target budget, and I'll craft a customized day-by-day itinerary with real-time weather analytics for you!",
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
 
-  // Smart Query Handler
-  const handleSend = (textToSend?: string) => {
+  // Real AI API Query Handler
+  const handleSend = async (textToSend?: string) => {
     const query = textToSend || inputPrompt;
     if (!query.trim()) return;
 
@@ -67,175 +70,46 @@ export default function AiPlannerPage() {
     if (!textToSend) setInputPrompt("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      let responseText = "";
-      let generatedItinerary: Message["itineraryData"] = undefined;
+    try {
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: query }),
+      });
 
-      const lower = query.toLowerCase().trim();
+      const json = await response.json();
 
-      // 1. CHECK FOR GENERAL / OFF-TOPIC QUERIES
-      if (
-        lower === "what is java" ||
-        lower.includes("java programming") ||
-        lower.includes("what is java?")
-      ) {
-        responseText =
-          "Java is a high-level, object-oriented programming language designed to be platform-independent ('Write Once, Run Anywhere'). It is widely used for enterprise web applications, Android app development, backend APIs, and big data processing.\n\nAs Traverse AI, I'm specialized in helping you discover Indian travel destinations and craft customized day-by-day trip itineraries! Let me know if you'd like to plan a trip to Darjeeling, Kerala, Goa, Jaipur, or anywhere across India.";
-      } else if (
-        lower.includes("who are you") ||
-        lower.includes("what can you do") ||
-        lower.includes("who made you")
-      ) {
-        responseText =
-          "I am Traverse AI — your intelligent India travel assistant! I can help you discover tourist destinations across North, South, West, East, and Northeast India, answer questions about local culture and food, and generate complete 3-day to 7-day travel itineraries.";
-      } else if (
-        lower.startsWith("hi") ||
-        lower.startsWith("hello") ||
-        lower.startsWith("namaste") ||
-        lower === "hey"
-      ) {
-        responseText =
-          "Namaste! How can I assist your India travels today? You can ask me to plan a trip to any Indian destination (e.g. 'Plan a 5-day trip to Darjeeling for ₹20,000') or ask for recommendations!";
-      } else if (
-        lower.includes("python") ||
-        lower.includes("javascript") ||
-        lower.includes("react") ||
-        lower.includes("coding")
-      ) {
-        responseText =
-          "That sounds like a technology topic! While I know tech, my primary super-power is planning unforgettable journeys across India. Feel free to ask me about destinations like Hampi, Kashmir, Kerala, Goa, or Ladakh!";
+      if (json.success && json.data) {
+        const aiMsg: Message = {
+          id: `ai-${Date.now()}`,
+          sender: "ai",
+          text: json.data.reply,
+          itineraryData: json.data.itinerary,
+        };
+        setMessages((prev) => [...prev, aiMsg]);
       } else {
-        // 2. SEARCH MATCHING DESTINATION IN DATASET
-        const matchedDest = DESTINATIONS_DATA.find(
-          (d) =>
-            lower.includes(d.id.toLowerCase()) ||
-            lower.includes(d.name.toLowerCase()) ||
-            lower.includes(d.state.toLowerCase())
-        );
-
-        // Check if query is explicitly asking for an itinerary / plan / trip
-        const isPlanningRequest =
-          lower.includes("plan") ||
-          lower.includes("itinerary") ||
-          lower.includes("trip") ||
-          lower.includes("day") ||
-          lower.includes("budget") ||
-          lower.includes("visit") ||
-          lower.includes("under") ||
-          lower.includes("suggest") ||
-          lower.includes("pack");
-
-        if (matchedDest) {
-          if (isPlanningRequest) {
-            responseText = `Here is your customized travel itinerary for ${matchedDest.name} (${matchedDest.state})! Built around top experiences, authentic stays, and local delicacies.`;
-
-            const exp1 = matchedDest.topExperiences[0]?.name || "Local Sightseeing Tour";
-            const exp2 = matchedDest.topExperiences[1]?.name || "Heritage & Nature Walk";
-            const stay = matchedDest.whereToStay[0]?.name || "Heritage Resort";
-            const food = matchedDest.localFood[0]?.name || "Regional Thali";
-            const tip = matchedDest.travelTips[0]?.content || "Book experiences early during peak season.";
-
-            generatedItinerary = {
-              destination: `${matchedDest.name} (${matchedDest.state})`,
-              destinationId: matchedDest.id,
-              duration: "4 Days",
-              budget: matchedDest.startingBudgetPerPerson * 2 || 18000,
-              days: [
-                {
-                  day: 1,
-                  title: `Arrival & ${exp1}`,
-                  places: [exp1, matchedDest.name + " Main Square"],
-                  hotel: stay,
-                  food: food,
-                  transport: "Local Taxi / Scooter",
-                  estimatedCost: Math.round(matchedDest.startingBudgetPerPerson * 0.3),
-                  tips: tip,
-                },
-                {
-                  day: 2,
-                  title: `${exp2} & Scenic Trails`,
-                  places: [exp2, "Panoramic Viewpoint"],
-                  hotel: stay,
-                  food: matchedDest.localFood[1]?.name || food,
-                  transport: "Private Car",
-                  estimatedCost: Math.round(matchedDest.startingBudgetPerPerson * 0.35),
-                  tips: matchedDest.travelTips[1]?.content || "Carry cash for local entry tickets.",
-                },
-                {
-                  day: 3,
-                  title: "Culture, Markets & Food Tour",
-                  places: [matchedDest.name + " Bazaars", "Artisan Workshops"],
-                  hotel: stay,
-                  food: matchedDest.localFood[0]?.name || food,
-                  transport: "E-Rickshaw",
-                  estimatedCost: Math.round(matchedDest.startingBudgetPerPerson * 0.25),
-                  tips: "Bargain politely at street craft markets.",
-                },
-                {
-                  day: 4,
-                  title: "Souvenirs & Departure",
-                  places: ["Local Tea & Spice Shops", "Departure Hub"],
-                  hotel: "Checkout",
-                  food: "Specialty Refreshments",
-                  transport: "Airport / Railway Transfer",
-                  estimatedCost: Math.round(matchedDest.startingBudgetPerPerson * 0.1),
-                  tips: "Allow 2 hours buffer for travel to airport/station.",
-                },
-              ],
-            };
-          } else {
-            // Informational query about a destination
-            responseText = `📍 **${matchedDest.name} (${matchedDest.state})** — ${matchedDest.region}\n\n${matchedDest.about}\n\n• **Best Time to Visit**: ${matchedDest.bestTimeToVisit}\n• **Must-Try Dishes**: ${matchedDest.localFood.map((f) => f.name).join(", ")}\n• **Top Highlights**: ${matchedDest.topExperiences.map((e) => e.name).join(", ")}\n\nWould you like me to generate a complete day-by-day trip itinerary for ${matchedDest.name}?`;
-          }
-        } else if (isPlanningRequest) {
-          // Generic itinerary for travel queries without specific destination match
-          responseText =
-            "I've generated a popular 4-day North & West India travel package based on your preferences!";
-          const defaultDest = DESTINATIONS_DATA[0]; // Jaipur
-          generatedItinerary = {
-            destination: "Jaipur Royal Heritage",
-            destinationId: defaultDest.id,
-            duration: "4 Days",
-            budget: 16000,
-            days: [
-              {
-                day: 1,
-                title: "Arrival & City Palace Tour",
-                places: ["City Palace", "Hawa Mahal"],
-                hotel: defaultDest.whereToStay[0]?.name || "Heritage Haveli",
-                food: "Dal Baati Churma",
-                transport: "E-Rickshaw",
-                estimatedCost: 4000,
-                tips: "Visit City Palace in morning hours for peaceful photography.",
-              },
-              {
-                day: 2,
-                title: "Amber Fort & Sheesh Mahal",
-                places: ["Amber Fort", "Nahargarh Sunset"],
-                hotel: defaultDest.whereToStay[0]?.name || "Heritage Haveli",
-                food: "Laal Maas",
-                transport: "Private Car",
-                estimatedCost: 5000,
-                tips: "Sunset view at Nahargarh offers stunning panoramic views.",
-              },
-            ],
-          };
-        } else {
-          // General query fallback response without fake itinerary card
-          responseText = `Thank you for reaching out! I am Traverse AI, your India Travel Guide. \n\nI can help you explore top Indian tourist spots (like Jaipur, Kerala, Hampi, Darjeeling, Kashmir, Goa, Ladakh) or craft day-by-day itineraries tailored to your budget.\n\nTry asking: *"Plan a 5-day trip to Darjeeling"* or *"What is the best time to visit Kerala?"*`;
-        }
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `ai-${Date.now()}`,
+            sender: "ai",
+            text: "I experienced a slight glitch analyzing real-time data. Please try rephrasing your request!",
+          },
+        ]);
       }
-
-      const aiMsg: Message = {
-        id: `ai-${Date.now()}`,
-        sender: "ai",
-        text: responseText,
-        itineraryData: generatedItinerary,
-      };
-
-      setMessages((prev) => [...prev, aiMsg]);
+    } catch (err) {
+      console.error("AI Fetch Error:", err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `ai-${Date.now()}`,
+          sender: "ai",
+          text: "I am having trouble connecting to the network right now. Please check your internet connection and try again.",
+        },
+      ]);
+    } finally {
       setIsTyping(false);
-    }, 600);
+    }
   };
 
   const handleSaveItinerary = (itinerary: NonNullable<Message["itineraryData"]>) => {
@@ -275,13 +149,14 @@ export default function AiPlannerPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold text-slate-900">Traverse AI Assistant</h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase">
-                  Online
+                <h1 className="text-xl font-extrabold text-slate-900">Traverse AI Engine</h1>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  Real-time Active
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Intelligent India Travel Companion & Itinerary Generator
+                Trained Artificial Intelligence Model & Real-time Destination Analytics
               </p>
             </div>
           </div>
@@ -328,7 +203,7 @@ export default function AiPlannerPage() {
                       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                         <div>
                           <span className="text-[10px] font-extrabold uppercase text-emerald-600 tracking-wider">
-                            AI Generated Itinerary
+                            Real AI Generated Itinerary
                           </span>
                           <h3 className="text-lg font-extrabold text-slate-900">{msg.itineraryData.destination}</h3>
                         </div>
@@ -339,6 +214,19 @@ export default function AiPlannerPage() {
                           </span>
                         </div>
                       </div>
+
+                      {/* Live Weather Analytics Badge */}
+                      {msg.itineraryData.weatherInfo && (
+                        <div className="px-3.5 py-2.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-between text-xs text-emerald-900 font-semibold">
+                          <div className="flex items-center gap-2">
+                            <CloudSun className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span>Weather: <strong>{msg.itineraryData.weatherInfo.temperature}</strong> ({msg.itineraryData.weatherInfo.condition})</span>
+                          </div>
+                          <span className="text-[10px] font-extrabold bg-emerald-200/70 text-emerald-900 px-2 py-0.5 rounded-full">
+                            {msg.itineraryData.weatherInfo.bestSeason}
+                          </span>
+                        </div>
+                      )}
 
                       {/* Days Timeline Preview */}
                       <div className="space-y-3">
@@ -383,7 +271,7 @@ export default function AiPlannerPage() {
                 </div>
                 <div className="p-3 bg-slate-100 rounded-2xl text-xs text-slate-500 font-medium flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-600 animate-spin" />
-                  <span>Traverse AI is crafting a response...</span>
+                  <span>Traverse Real AI Engine is analyzing live data & generating response...</span>
                 </div>
               </div>
             )}
@@ -417,7 +305,7 @@ export default function AiPlannerPage() {
                     handleSend();
                   }
                 }}
-                placeholder="Ask anything (e.g. 'I want to visit Kerala for 5 days with ₹20,000')..."
+                placeholder="Ask real AI anything (e.g. 'I want to visit Kerala for 5 days with ₹20,000')..."
                 className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 text-sm font-medium text-slate-900 focus:outline-none focus:border-emerald-600 placeholder:text-slate-400"
               />
               <button
