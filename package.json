@@ -6,7 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "deploy": "vercel --prod",
-    "lint": "eslint"
+    "lint": "eslint",
+    "load-test": "node load-tests/api-load-test.js",
+    "load-test:single": "node load-tests/api-load-test.js --url http://localhost:3000/api/ai/recommend --duration 60 --concurrency 100",
+    "load-test:chat": "node load-tests/api-load-test.js --url http://localhost:3000/api/ai/chat --duration 60 --concurrency 100",
+    "load-test:otp": "node load-tests/api-load-test.js --url http://localhost:3000/api/auth/send-otp --duration 15 --concurrency 100",
+    "load-test:destinations": "node load-tests/api-load-test.js --url http://localhost:3000/destinations --duration 60 --concurrency 100"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
