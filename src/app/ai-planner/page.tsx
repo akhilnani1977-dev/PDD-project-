@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { QUICK_PROMPTS } from "@/data/mockData";
 import { useAppStore, PlannedTrip } from "@/lib/store";
 import {
-  Sparkles,
   Send,
   User,
   Bot,
