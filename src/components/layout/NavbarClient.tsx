@@ -16,8 +16,8 @@ export default function NavbarClient() {
 
   const navLinks = [
     { label: "Discover", href: "/" },
-    { label: "Destinations", href: "/destinations", hasDropdown: true },
     { label: "Plan Trip", href: "/plan", hasDropdown: true },
+    { label: "Hotels", href: "/hotels" },
     { label: "AI Assistant", href: "/ai-planner", isAi: true },
     { label: "My Trips", href: "/trips", hasDropdown: true },
   ];

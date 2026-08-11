@@ -220,10 +220,10 @@ export default function HomeClient() {
             <p className="text-sm text-slate-500 mt-1">Handpicked destinations just for you</p>
           </div>
           <Link
-            href="/destinations"
+            href="/plan"
             className="flex items-center gap-1 text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
           >
-            <span>View All Destinations</span>
+            <span>Plan Custom Trip</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

@@ -10,7 +10,7 @@ export default function MobileNav() {
 
   const navItems = [
     { label: "Home", href: "/", icon: Compass },
-    { label: "Discover", href: "/destinations", icon: MapPin },
+    { label: "Hotels", href: "/hotels", icon: MapPin },
     { label: "Plan", href: "/plan", icon: Sparkles },
     { label: "Trips", href: "/trips", icon: Briefcase },
     { label: "Profile", href: "/profile", icon: User },
