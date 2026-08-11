@@ -376,7 +376,7 @@ async function runSeleniumTests() {
     // Test Case: Link Navigation Check
     console.log('Test 3: Checking navigation links...');
     try {
-      let signupLink = await driver.findElement(By.linkText('Sign Up'));
+      let signupLink = await driver.findElement(By.partialLinkText('Create an account'));
       await signupLink.click();
       await driver.sleep(1000);
       let signupUrl = await driver.getCurrentUrl();

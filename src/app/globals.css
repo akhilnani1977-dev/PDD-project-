@@ -1,33 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  /* Primary organic palette */
-  --color-organic-green: #2B4A34;
-  --color-organic-green-dark: #1D3A29;
-  --color-organic-light: #F4F5F7;
-  --color-organic-white: #FFFFFF;
-  --color-organic-black: #121212;
-  --color-organic-accent: #E05D36;
+  --color-emerald-primary: #059669;
+  --color-emerald-hover: #047857;
+  --color-emerald-light: #ECFDF5;
+  --color-emerald-border: #A7F3D0;
 
-  /* Legacy traverse theme tokens (used in destinations, ai-planner pages) */
-  --color-traverse-cyan: #22D3EE;
-  --color-traverse-aurora: #F59E0B;
-  --color-traverse-frost: #F4F5F7;
-  --color-traverse-midnight: #0F172A;
-  --color-traverse-ocean: #1E293B;
+  --color-gold-accent: #D97706;
+  --color-gold-light: #FEF3C7;
 
-  --color-background: var(--color-organic-light);
-  --color-foreground: var(--color-organic-black);
+  --color-neutral-bg: #F8FAFC;
+  --color-surface-white: #FFFFFF;
+  --color-surface-muted: #F1F5F9;
+
+  --color-text-main: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
+
+  --color-border-subtle: #E2E8F0;
 }
 
 @layer base {
   :root {
-    --background: #F4F5F7;
-    --foreground: #121212;
-  }
-  .dark {
-    --background: #1D3A29;
-    --foreground: #F4F5F7;
+    --background: #F8FAFC;
+    --foreground: #0F172A;
   }
 }
 
@@ -35,45 +31,124 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  background-color: var(--background);
-  color: var(--foreground);
-  /* Clean, hidden scrollbar for app-like feel */
-  scrollbar-width: none;
-}
-::-webkit-scrollbar {
-  display: none;
-}
-
-body {
-  font-family: var(--font-sans), sans-serif;
+  background-color: #F8FAFC;
+  color: #0F172A;
+  font-family: var(--font-sans), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
-/* Utility classes */
+/* Fast button interaction & touch optimization */
+button,
+[role="button"],
+a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active,
+a:active {
+  transform: scale(0.98);
+  transition: transform 0.08s ease-out;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Skeleton loader shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Premium Design Utilities */
 @layer utilities {
-  .pill-button {
-    @apply rounded-full bg-organic-black text-white font-bold transition-transform hover:scale-105 active:scale-95;
+
+  /* Typography Scale */
+  .display-hero {
+    font-size: clamp(2.5rem, 5.5vw, 4.25rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: #0F172A;
   }
-  .pill-button-white {
-    @apply rounded-full bg-white text-organic-black font-bold transition-transform hover:scale-105 active:scale-95 shadow-sm;
+
+  .section-title {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #0F172A;
   }
-  .soft-card {
-    @apply bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100;
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #0F172A;
   }
-  .dark .soft-card {
-    @apply bg-organic-green-dark/50 border-white/10;
+
+  /* Glassmorphism Surface Token */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
   }
-  .glass-panel {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-lg;
+
+  .glass-dark {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
-  .text-gradient {
-    background: linear-gradient(135deg, #22D3EE, #F59E0B);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+
+  /* Card Radius & Drop Shadows */
+  .rounded-card {
+    border-radius: 1.25rem;
   }
-  .bg-gradient-main {
-    background: linear-gradient(135deg, #22D3EE, #F59E0B);
+
+  .shadow-soft {
+    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
   }
+
+  .shadow-elevated {
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.08), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
+  }
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

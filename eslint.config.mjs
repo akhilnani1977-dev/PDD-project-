@@ -18,6 +18,12 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "android/**",
+      "selenium/**",
+      "load-tests/**",
+      "deployment-tests/**",
+      "validation-tests/**",
+      "unit-tests/**",
     ],
   },
 ];
