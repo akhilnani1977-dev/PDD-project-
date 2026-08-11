@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { QUICK_PROMPTS } from "@/data/mockData";
+import { QUICK_PROMPTS, DESTINATIONS_DATA } from "@/data/mockData";
 import { useAppStore, PlannedTrip } from "@/lib/store";
 import {
   Sparkles,
@@ -10,6 +10,10 @@ import {
   User,
   Bot,
   Bookmark,
+  Calendar,
+  IndianRupee,
+  MapPin,
+  Compass,
 } from "lucide-react";
 
 interface Message {
@@ -18,6 +22,7 @@ interface Message {
   text: string;
   itineraryData?: {
     destination: string;
+    destinationId: string;
     duration: string;
     budget: number;
     days: {
@@ -47,6 +52,7 @@ export default function AiPlannerPage() {
   ]);
   const [isTyping, setIsTyping] = useState(false);
 
+  // Smart Query Handler
   const handleSend = (textToSend?: string) => {
     const query = textToSend || inputPrompt;
     if (!query.trim()) return;
@@ -65,157 +71,159 @@ export default function AiPlannerPage() {
       let responseText = "";
       let generatedItinerary: Message["itineraryData"] = undefined;
 
-      const lower = query.toLowerCase();
+      const lower = query.toLowerCase().trim();
 
-      if (lower.includes("kerala")) {
+      // 1. CHECK FOR GENERAL / OFF-TOPIC QUERIES
+      if (
+        lower === "what is java" ||
+        lower.includes("java programming") ||
+        lower.includes("what is java?")
+      ) {
         responseText =
-          "Great choice! Kerala is magnificent. Before I generate your 5-day itinerary, would you prefer backwater houseboats, tea gardens in Munnar, coastal beaches, or a balanced mix?";
-        generatedItinerary = {
-          destination: "Kerala Backwaters & Hills",
-          duration: "5 Days",
-          budget: 20000,
-          days: [
-            {
-              day: 1,
-              title: "Arrive in Kochi & Heritage Walk",
-              places: ["Fort Kochi", "Chinese Fishing Nets", "Mattancherry Palace"],
-              hotel: "Zostel Kochi / Heritage Homestay",
-              food: "Kerala Fish Curry Rice & Appam",
-              transport: "Local Autorickshaw / Ferry",
-              estimatedCost: 3500,
-              tips: "Take the state ferry for ₹15 to enjoy scenic water views.",
-            },
-            {
-              day: 2,
-              title: "Drive to Munnar Tea Gardens",
-              places: ["Mattupetty Dam", "Tea Museum", "Anamudi Peak Viewpoint"],
-              hotel: "Tea Valley Resort Munnar",
-              food: "Hot Cardamom Chai & Kerala Parotta",
-              transport: "Shared Taxi / KSRTC Bus",
-              estimatedCost: 4200,
-              tips: "Mornings in Munnar are chilly; carry a lightweight jacket.",
-            },
-            {
-              day: 3,
-              title: "Munnar Spice Plantation Tour",
-              places: ["Eravikulam National Park", "Spice Gardens"],
-              hotel: "Tea Valley Resort Munnar",
-              food: "Traditional Banana Leaf Sadya",
-              transport: "Local Taxi",
-              estimatedCost: 3800,
-              tips: "Buy fresh cardamom and cinnamon directly from spice gardens.",
-            },
-            {
-              day: 4,
-              title: "Alleppey Houseboat Experience",
-              places: ["Punnamada Lake", "Vembanad Backwaters"],
-              hotel: "Traditional Deluxe Houseboat",
-              food: "Fresh Karimeen Pollichathu & Coconut Stew",
-              transport: "Houseboat Cruise",
-              estimatedCost: 6500,
-              tips: "Check-in is usually at 12:00 PM; enjoy sunset from the upper deck.",
-            },
-            {
-              day: 5,
-              title: "Alleppey Beach & Departure",
-              places: ["Alleppey Beach Lighthouse", "Souvenir Spice Market"],
-              hotel: "Checkout",
-              food: "Filter Coffee & Banana Fritters",
-              transport: "Taxi to Kochi Airport",
-              estimatedCost: 2000,
-              tips: "Keep extra 2 hours for airport security during peak hours.",
-            },
-          ],
-        };
-      } else if (lower.includes("jaipur") || lower.includes("rajasthan")) {
+          "Java is a high-level, object-oriented programming language designed to be platform-independent ('Write Once, Run Anywhere'). It is widely used for enterprise web applications, Android app development, backend APIs, and big data processing.\n\nAs Traverse AI, I'm specialized in helping you discover Indian travel destinations and craft customized day-by-day trip itineraries! Let me know if you'd like to plan a trip to Darjeeling, Kerala, Goa, Jaipur, or anywhere across India.";
+      } else if (
+        lower.includes("who are you") ||
+        lower.includes("what can you do") ||
+        lower.includes("who made you")
+      ) {
         responseText =
-          "Jaipur is a royal masterpiece! Here is a 3-day royal itinerary featuring hilltop forts, palace mirror work, and authentic Rajasthani cuisine within ₹15,000.";
-        generatedItinerary = {
-          destination: "Jaipur Pink City Explorer",
-          duration: "3 Days",
-          budget: 15000,
-          days: [
-            {
-              day: 1,
-              title: "Arrival & Royal Palaces",
-              places: ["City Palace", "Hawa Mahal", "Jantar Mantar"],
-              hotel: "Umaid Bhawan Heritage Hotel",
-              food: "Dal Baati Churma at LMB",
-              transport: "Uber / E-Rickshaw",
-              estimatedCost: 4500,
-              tips: "Buy a combo composite ticket at Hawa Mahal to save on entry fees.",
-            },
-            {
-              day: 2,
-              title: "Hilltop Forts & Sunset Views",
-              places: ["Amber Fort Sheesh Mahal", "Nahargarh Fort Sunset"],
-              hotel: "Umaid Bhawan Heritage Hotel",
-              food: "Laal Maas & Pyaaz Kachori",
-              transport: "Cab / Scooter Rental",
-              estimatedCost: 5500,
-              tips: "Visit Nahargarh Fort around 05:00 PM for panoramic city light views.",
-            },
-            {
-              day: 3,
-              title: "Bazaars & Artisan Shopping",
-              places: ["Johari Bazaar", "Bapu Bazaar", "Patrika Gate"],
-              hotel: "Checkout",
-              food: "Ghewar & Saffron Lassi",
-              transport: "Auto Rickshaw",
-              estimatedCost: 3000,
-              tips: "Bargain respectfully; artisan shops offer up to 25% discount.",
-            },
-          ],
-        };
-      } else if (lower.includes("cheap") || lower.includes("under ₹10,000") || lower.includes("budget")) {
+          "I am Traverse AI — your intelligent India travel assistant! I can help you discover tourist destinations across North, South, West, East, and Northeast India, answer questions about local culture and food, and generate complete 3-day to 7-day travel itineraries.";
+      } else if (
+        lower.startsWith("hi") ||
+        lower.startsWith("hello") ||
+        lower.startsWith("namaste") ||
+        lower === "hey"
+      ) {
         responseText =
-          "For incredible destinations under ₹10,000, I highly recommend Rishikesh, Hampi, or Pondicherry! Here is a 4-day budget adventure in Rishikesh for ₹7,500.";
-        generatedItinerary = {
-          destination: "Rishikesh Ganges & Rafting",
-          duration: "4 Days",
-          budget: 7500,
-          days: [
-            {
-              day: 1,
-              title: "Arrival & Ganga Aarti",
-              places: ["Laxman Jhula", "Triveni Ghat Evening Aarti"],
-              hotel: "Zostel Tapovan",
-              food: "Ayurvedic Khichdi & Herbal Tea",
-              transport: "Shared Auto",
-              estimatedCost: 1500,
-              tips: "Reach Triveni Ghat by 05:30 PM to secure front seating for the Aarti.",
-            },
-            {
-              day: 2,
-              title: "White Water Rafting & Cliff Jump",
-              places: ["Shivpuri Rafting Point", "Maggi Point"],
-              hotel: "Zostel Tapovan",
-              food: "Fresh Woodfired Pizza at Beatles Cafe",
-              transport: "Rafting Shuttle",
-              estimatedCost: 2500,
-              tips: "Carry dry clothes in a waterproof bag during rafting.",
-            },
-          ],
-        };
+          "Namaste! How can I assist your India travels today? You can ask me to plan a trip to any Indian destination (e.g. 'Plan a 5-day trip to Darjeeling for ₹20,000') or ask for recommendations!";
+      } else if (
+        lower.includes("python") ||
+        lower.includes("javascript") ||
+        lower.includes("react") ||
+        lower.includes("coding")
+      ) {
+        responseText =
+          "That sounds like a technology topic! While I know tech, my primary super-power is planning unforgettable journeys across India. Feel free to ask me about destinations like Hampi, Kashmir, Kerala, Goa, or Ladakh!";
       } else {
-        responseText = `I have analyzed your request for "${query}". Here is a curated itinerary suggestion built for an optimal travel experience in India!`;
-        generatedItinerary = {
-          destination: "Goa Coastal Vibe",
-          duration: "4 Days",
-          budget: 18000,
-          days: [
-            {
-              day: 1,
-              title: "Arrival & North Goa Beach Walk",
-              places: ["Anjuna Beach", "Curlies Shack"],
-              hotel: "The Hostel Crowd Anjuna",
-              food: "Goan Fish Curry Rice",
-              transport: "Rental Scooter",
-              estimatedCost: 4000,
-              tips: "Rent a scooter at the railway station for ₹350/day.",
-            },
-          ],
-        };
+        // 2. SEARCH MATCHING DESTINATION IN DATASET
+        const matchedDest = DESTINATIONS_DATA.find(
+          (d) =>
+            lower.includes(d.id.toLowerCase()) ||
+            lower.includes(d.name.toLowerCase()) ||
+            lower.includes(d.state.toLowerCase())
+        );
+
+        // Check if query is explicitly asking for an itinerary / plan / trip
+        const isPlanningRequest =
+          lower.includes("plan") ||
+          lower.includes("itinerary") ||
+          lower.includes("trip") ||
+          lower.includes("day") ||
+          lower.includes("budget") ||
+          lower.includes("visit") ||
+          lower.includes("under") ||
+          lower.includes("suggest") ||
+          lower.includes("pack");
+
+        if (matchedDest) {
+          if (isPlanningRequest) {
+            responseText = `Here is your customized travel itinerary for ${matchedDest.name} (${matchedDest.state})! Built around top experiences, authentic stays, and local delicacies.`;
+
+            const exp1 = matchedDest.topExperiences[0]?.name || "Local Sightseeing Tour";
+            const exp2 = matchedDest.topExperiences[1]?.name || "Heritage & Nature Walk";
+            const stay = matchedDest.whereToStay[0]?.name || "Heritage Resort";
+            const food = matchedDest.localFood[0]?.name || "Regional Thali";
+            const tip = matchedDest.travelTips[0]?.content || "Book experiences early during peak season.";
+
+            generatedItinerary = {
+              destination: `${matchedDest.name} (${matchedDest.state})`,
+              destinationId: matchedDest.id,
+              duration: "4 Days",
+              budget: matchedDest.startingBudgetPerPerson * 2 || 18000,
+              days: [
+                {
+                  day: 1,
+                  title: `Arrival & ${exp1}`,
+                  places: [exp1, matchedDest.name + " Main Square"],
+                  hotel: stay,
+                  food: food,
+                  transport: "Local Taxi / Scooter",
+                  estimatedCost: Math.round(matchedDest.startingBudgetPerPerson * 0.3),
+                  tips: tip,
+                },
+                {
+                  day: 2,
+                  title: `${exp2} & Scenic Trails`,
+                  places: [exp2, "Panoramic Viewpoint"],
+                  hotel: stay,
+                  food: matchedDest.localFood[1]?.name || food,
+                  transport: "Private Car",
+                  estimatedCost: Math.round(matchedDest.startingBudgetPerPerson * 0.35),
+                  tips: matchedDest.travelTips[1]?.content || "Carry cash for local entry tickets.",
+                },
+                {
+                  day: 3,
+                  title: "Culture, Markets & Food Tour",
+                  places: [matchedDest.name + " Bazaars", "Artisan Workshops"],
+                  hotel: stay,
+                  food: matchedDest.localFood[0]?.name || food,
+                  transport: "E-Rickshaw",
+                  estimatedCost: Math.round(matchedDest.startingBudgetPerPerson * 0.25),
+                  tips: "Bargain politely at street craft markets.",
+                },
+                {
+                  day: 4,
+                  title: "Souvenirs & Departure",
+                  places: ["Local Tea & Spice Shops", "Departure Hub"],
+                  hotel: "Checkout",
+                  food: "Specialty Refreshments",
+                  transport: "Airport / Railway Transfer",
+                  estimatedCost: Math.round(matchedDest.startingBudgetPerPerson * 0.1),
+                  tips: "Allow 2 hours buffer for travel to airport/station.",
+                },
+              ],
+            };
+          } else {
+            // Informational query about a destination
+            responseText = `📍 **${matchedDest.name} (${matchedDest.state})** — ${matchedDest.region}\n\n${matchedDest.about}\n\n• **Best Time to Visit**: ${matchedDest.bestTimeToVisit}\n• **Must-Try Dishes**: ${matchedDest.localFood.map((f) => f.name).join(", ")}\n• **Top Highlights**: ${matchedDest.topExperiences.map((e) => e.name).join(", ")}\n\nWould you like me to generate a complete day-by-day trip itinerary for ${matchedDest.name}?`;
+          }
+        } else if (isPlanningRequest) {
+          // Generic itinerary for travel queries without specific destination match
+          responseText =
+            "I've generated a popular 4-day North & West India travel package based on your preferences!";
+          const defaultDest = DESTINATIONS_DATA[0]; // Jaipur
+          generatedItinerary = {
+            destination: "Jaipur Royal Heritage",
+            destinationId: defaultDest.id,
+            duration: "4 Days",
+            budget: 16000,
+            days: [
+              {
+                day: 1,
+                title: "Arrival & City Palace Tour",
+                places: ["City Palace", "Hawa Mahal"],
+                hotel: defaultDest.whereToStay[0]?.name || "Heritage Haveli",
+                food: "Dal Baati Churma",
+                transport: "E-Rickshaw",
+                estimatedCost: 4000,
+                tips: "Visit City Palace in morning hours for peaceful photography.",
+              },
+              {
+                day: 2,
+                title: "Amber Fort & Sheesh Mahal",
+                places: ["Amber Fort", "Nahargarh Sunset"],
+                hotel: defaultDest.whereToStay[0]?.name || "Heritage Haveli",
+                food: "Laal Maas",
+                transport: "Private Car",
+                estimatedCost: 5000,
+                tips: "Sunset view at Nahargarh offers stunning panoramic views.",
+              },
+            ],
+          };
+        } else {
+          // General query fallback response without fake itinerary card
+          responseText = `Thank you for reaching out! I am Traverse AI, your India Travel Guide. \n\nI can help you explore top Indian tourist spots (like Jaipur, Kerala, Hampi, Darjeeling, Kashmir, Goa, Ladakh) or craft day-by-day itineraries tailored to your budget.\n\nTry asking: *"Plan a 5-day trip to Darjeeling"* or *"What is the best time to visit Kerala?"*`;
+        }
       }
 
       const aiMsg: Message = {
@@ -227,20 +235,20 @@ export default function AiPlannerPage() {
 
       setMessages((prev) => [...prev, aiMsg]);
       setIsTyping(false);
-    }, 1000);
+    }, 600);
   };
 
   const handleSaveItinerary = (itinerary: NonNullable<Message["itineraryData"]>) => {
     const newTrip: PlannedTrip = {
       id: `ai-trip-${Date.now()}`,
-      destinationId: "kerala",
+      destinationId: itinerary.destinationId || "jaipur",
       title: itinerary.destination,
       dates: "Flexible Dates 2026",
       travellersCount: 2,
       budget: itinerary.budget,
       status: "Upcoming",
       progressPercentage: 20,
-      coverImage: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=80",
       daysCount: itinerary.days.length,
       budgetBreakdown: {
         accommodation: Math.round(itinerary.budget * 0.4),
@@ -257,133 +265,170 @@ export default function AiPlannerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 py-8 pb-24">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 text-slate-900 py-10 pb-28">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Header */}
-        <div className="mb-6 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            <span>Traverse AI</span>
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shadow-md">
+              <Bot className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-extrabold text-slate-900">Traverse AI Assistant</h1>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase">
+                  Online
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Intelligent India Travel Companion & Itinerary Generator
+              </p>
+            </div>
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 mt-2">Traverse AI Assistant</h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">Your personal India travel companion.</p>
+
+          <button
+            type="button"
+            onClick={() => router.push("/plan")}
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+          >
+            <Compass className="w-4 h-4 text-emerald-600" />
+            <span>Wizard Planner</span>
+          </button>
         </div>
 
-        {/* Quick Prompts Bar */}
-        <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
-          {QUICK_PROMPTS.map((prompt) => (
-            <button
-              key={prompt}
-              onClick={() => handleSend(prompt)}
-              className="px-3.5 py-1.5 rounded-full bg-white border border-slate-200 hover:border-emerald-500 hover:text-emerald-700 text-slate-700 text-xs font-semibold transition-all shrink-0 shadow-2xs"
-            >
-              ⚡ {prompt}
-            </button>
-          ))}
-        </div>
-
-        {/* Chat Window */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden flex flex-col h-[600px]">
-          {/* Chat Messages scroll area */}
-          <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-6">
+        {/* Chat Stream Window */}
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-lg min-h-[480px] flex flex-col justify-between space-y-6">
+          <div className="space-y-6 overflow-y-auto max-h-[520px] pr-2 no-scrollbar">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
               >
                 {msg.sender === "ai" && (
-                  <div className="w-9 h-9 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <Bot className="w-5 h-5" />
+                  <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white shrink-0 mt-1 shadow-sm">
+                    <Bot className="w-4 h-4" />
                   </div>
                 )}
 
-                <div className={`max-w-2xl ${msg.sender === "user" ? "items-end" : "items-start"}`}>
+                <div className={`max-w-2xl space-y-4 ${msg.sender === "user" ? "items-end" : "items-start"}`}>
+                  {/* Bubble Message Text */}
                   <div
-                    className={`p-4 rounded-3xl text-sm leading-relaxed ${
+                    className={`p-4 rounded-3xl text-sm leading-relaxed whitespace-pre-line shadow-xs ${
                       msg.sender === "user"
-                        ? "bg-slate-900 text-white rounded-br-none"
-                        : "bg-slate-100 text-slate-900 rounded-bl-none border border-slate-200/60"
+                        ? "bg-slate-900 text-white rounded-tr-none font-medium"
+                        : "bg-slate-100 text-slate-800 rounded-tl-none font-normal"
                     }`}
                   >
-                    <p>{msg.text}</p>
+                    {msg.text}
                   </div>
 
-                  {/* Render Generated Itinerary Card if present */}
+                  {/* Render Itinerary Card ONLY IF Itinerary Data Exists */}
                   {msg.itineraryData && (
-                    <div className="mt-4 bg-slate-50 rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-                      <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+                    <div className="bg-white rounded-3xl p-5 border border-emerald-200 shadow-md space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                         <div>
-                          <span className="text-[10px] font-bold uppercase text-emerald-700">AI Generated Itinerary</span>
-                          <h4 className="text-base font-extrabold text-slate-900">{msg.itineraryData.destination}</h4>
+                          <span className="text-[10px] font-extrabold uppercase text-emerald-600 tracking-wider">
+                            AI Generated Itinerary
+                          </span>
+                          <h3 className="text-lg font-extrabold text-slate-900">{msg.itineraryData.destination}</h3>
                         </div>
                         <div className="text-right">
-                          <span className="text-xs font-bold text-slate-700 block">{msg.itineraryData.duration}</span>
-                          <span className="text-xs font-extrabold text-emerald-600">₹{msg.itineraryData.budget.toLocaleString("en-IN")}</span>
+                          <span className="text-xs font-bold text-slate-500 block">{msg.itineraryData.duration}</span>
+                          <span className="text-sm font-extrabold text-emerald-600">
+                            ₹{msg.itineraryData.budget.toLocaleString("en-IN")}
+                          </span>
                         </div>
                       </div>
 
                       {/* Days Timeline Preview */}
                       <div className="space-y-3">
-                        {msg.itineraryData.days.map((day) => (
-                          <div key={day.day} className="p-3 bg-white rounded-xl border border-slate-200 text-xs space-y-1">
+                        {msg.itineraryData.days.map((d) => (
+                          <div key={d.day} className="bg-slate-50 rounded-2xl p-3 border border-slate-200/80 text-xs space-y-1">
                             <div className="flex items-center justify-between font-bold text-slate-900">
-                              <span>Day {day.day} — {day.title}</span>
-                              <span className="text-emerald-700 font-extrabold">₹{day.estimatedCost}</span>
+                              <span>Day {d.day} — {d.title}</span>
+                              <span className="text-emerald-700">₹{d.estimatedCost}</span>
                             </div>
-                            <p className="text-slate-600">📍 <strong>Places:</strong> {day.places.join(" • ")}</p>
-                            <p className="text-slate-600">🏨 <strong>Stay:</strong> {day.hotel}</p>
-                            <p className="text-slate-600">🍛 <strong>Food:</strong> {day.food}</p>
-                            <p className="text-slate-500 italic text-[11px]">💡 Tip: {day.tips}</p>
+                            <p className="text-slate-600 text-[11px]">📍 <strong>Places:</strong> {d.places.join(" • ")}</p>
+                            <p className="text-slate-600 text-[11px]">🏨 <strong>Stay:</strong> {d.hotel}</p>
+                            <p className="text-slate-600 text-[11px]">🍱 <strong>Food:</strong> {d.food}</p>
+                            <p className="text-slate-400 italic text-[10px]">💡 Tip: {d.tips}</p>
                           </div>
                         ))}
                       </div>
 
                       <button
+                        type="button"
                         onClick={() => handleSaveItinerary(msg.itineraryData!)}
-                        className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2"
+                        className="w-full py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                       >
                         <Bookmark className="w-4 h-4" />
-                        <span>Save Itinerary to My Trips</span>
+                        <span>Save This Itinerary to My Trips</span>
                       </button>
                     </div>
                   )}
                 </div>
 
                 {msg.sender === "user" && (
-                  <div className="w-9 h-9 rounded-2xl bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <User className="w-5 h-5" />
+                  <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white shrink-0 mt-1 shadow-sm">
+                    <User className="w-4 h-4" />
                   </div>
                 )}
               </div>
             ))}
 
             {isTyping && (
-              <div className="flex items-center gap-3 text-slate-400 text-xs">
-                <div className="w-8 h-8 rounded-2xl bg-emerald-600 text-white flex items-center justify-center">
+              <div className="flex gap-3 justify-start">
+                <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white shrink-0">
                   <Bot className="w-4 h-4" />
                 </div>
-                <span>Traverse AI is crafting your itinerary...</span>
+                <div className="p-3 bg-slate-100 rounded-2xl text-xs text-slate-500 font-medium flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-emerald-600 animate-spin" />
+                  <span>Traverse AI is crafting a response...</span>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Chat Input */}
-          <div className="p-4 border-t border-slate-200 bg-slate-50 flex items-center gap-3">
-            <input
-              type="text"
-              value={inputPrompt}
-              onChange={(e) => setInputPrompt(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Ask anything (e.g. 'I want to visit Kerala for 5 days with ₹20,000')..."
-              className="flex-1 bg-white px-4 py-3 rounded-2xl border border-slate-200 text-sm font-medium text-slate-900 focus:outline-none focus:border-emerald-600 shadow-2xs"
-            />
-            <button
-              onClick={() => handleSend()}
-              className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all flex items-center gap-1 shrink-0"
-            >
-              <span>Send</span>
-              <Send className="w-4 h-4" />
-            </button>
+          {/* Quick Prompts Bar */}
+          <div className="pt-2 border-t border-slate-100">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+              <span className="text-[10px] font-bold text-slate-400 uppercase shrink-0">Try Asking:</span>
+              {QUICK_PROMPTS.map((prompt, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleSend(prompt)}
+                  className="px-3 py-1 rounded-full bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 text-xs font-semibold whitespace-nowrap transition-colors shrink-0 cursor-pointer border border-slate-200"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+
+            {/* Input Bar */}
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="text"
+                value={inputPrompt}
+                onChange={(e) => setInputPrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+                placeholder="Ask anything (e.g. 'I want to visit Kerala for 5 days with ₹20,000')..."
+                className="w-full px-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 text-sm font-medium text-slate-900 focus:outline-none focus:border-emerald-600 placeholder:text-slate-400"
+              />
+              <button
+                type="button"
+                onClick={() => handleSend()}
+                className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition-all flex items-center gap-1.5 shadow-md cursor-pointer shrink-0"
+              >
+                <span>Send</span>
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
